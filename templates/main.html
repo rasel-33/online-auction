@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+    {% include 'navbar.html' %}
+
+    <hr>
+    {% if messages %}
+    <ul class="messages">
+    {% for message in messages %}
+        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    {% endfor %}
+    </ul>
+    {% endif %}
+    {% block content %}
+    <h1>This is  Main Page</h1>
+    <h1>THIS IS ALSO HOME PAGE</h1>
+    
+    {% endblock content %}
+
+    
+    <footer>
+        Here goes the footer
+    </footer>
+</body>
+</html>

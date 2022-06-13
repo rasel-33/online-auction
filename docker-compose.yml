@@ -1,0 +1,18 @@
+version: "3.9"
+
+services:
+
+  db_stage:
+    image: postgres
+    restart: always
+    volumes:
+      - auction_postgres_data2:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=djangoDB2
+      - POSTGRES_USER=djangoUSER
+      - POSTGRES_PASSWORD=djangoPASS
+    ports:
+      - 5432:5432
+
+volumes:
+  auction_postgres_data2:

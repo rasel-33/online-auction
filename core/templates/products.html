@@ -1,0 +1,16 @@
+{% extends 'main.html' %}
+
+{% block content %}
+
+<h1>products</h1>
+<p>{{number}}</p>
+{% for product in items %}
+    <h3><a href="{% url 'single-product' product.id %}">{{ product.product_name }}<a></h3>
+
+    <h4>{{ product.product_description }}</h4>
+    <hr>
+{% endfor %}
+
+{% endblock content %}
+
+
