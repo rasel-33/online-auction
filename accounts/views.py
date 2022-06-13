@@ -1,10 +1,13 @@
 from django.shortcuts import render,redirect
-from .forms import RegisterUserForm, UpdateProfileForm, SignInForm
+from .forms import RegisterUserForm, UpdateProfileForm, SignInForm, ResetPasswordRequestForm, ResetPasswordForm
 from django.contrib.auth.models import User 
 from django.contrib import messages
 from django.contrib.auth import login, authenticate, logout
 from .models import Profile
 from django.contrib.auth.forms import AuthenticationForm
+from django.core.mail import send_mail
+from django.conf import settings
+from django.contrib.auth.tokens import default_token_generator
 # Create your views here.
 
 def registerUser(request):
@@ -18,12 +21,22 @@ def registerUser(request):
             email=userdata.cleaned_data.get('email'),
             password=userdata.cleaned_data.get('password')
             )
-            Profile.objects.create(
+            profile = Profile.objects.create(
                 user_id=user.id,
                 user_type=userdata.cleaned_data.get('user_type'),
                 gender = userdata.cleaned_data.get('gender')
 
             )
+            subject = 'Welcome to online-auction'
+            message = "Let's have an online virtual auction environment" 
+            send_mail(
+                subject,
+                message,
+                settings.EMAIL_HOST_USER,
+                [profile.user.email],
+                fail_silently=False,
+            )
+
             return redirect('products')
 
     context = {'form':userdata}
@@ -70,3 +83,48 @@ def signinUser(request):
 def logoutUser(request):
     logout(request)
     return redirect('signin-user')
+
+def password_reset_request_view(request):
+    form = ResetPasswordRequestForm()
+    if request.method =='POST':
+        resetCredential = request.POST['resetCredential']
+        if User.objects.filter(email__iexact=resetCredential).exists():
+            user = User.objects.get(email=resetCredential)
+
+            token = default_token_generator.make_token(user)
+            subject="Reset Password-'Online-auction'"
+            message="Your password reset credentials are in this link http://127.0.0.1:8000/accounts/change-password/"+token+"/"+user.email+" tap this link to change your password"
+            send_mail(
+                subject,
+                message,
+                settings.EMAIL_HOST_USER,
+                [resetCredential],
+                fail_silently=False,
+            )
+            return redirect('signin-user')
+        elif User.objects.filter(username=resetCredential).exists():
+            user = User.objects.get(username=resetCredential)
+            subject="Do you want to Change your Password??"
+            message="Your email is forcefully trying to change your password"
+            send_mail(
+                subject,
+                message,
+                settings.EMAIL_HOST_USER,
+                [user.email],
+                fail_silently=False,
+            )
+            return redirect('signin-user')
+        else:
+            messages.warning(request, "No user found with This email")
+            return redirect('password_reset_request')
+    context ={'form':form}
+    return render(request,'accounts/passwordResetRequest.html',context)
+
+def changePassword(request,token,email):
+    user = User.objects.get(email=email)
+    if user is not None:
+        token_is_valid = default_token_generator.check_token(user,token)
+        if token_is_valid:
+            return redirect('change-password')
+        else:
+            return redirect('signin-user')

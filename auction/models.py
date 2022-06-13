@@ -13,6 +13,9 @@ class Product(VarifiedByAbstractModel, BaseModel):
     bid_start = models.DateTimeField()
     bid_expiry = models.DateTimeField()
 
+    def __str__(self):
+        return str(self.product_name)
+
 class Category(BaseModel):
     added_by = models.ForeignKey("auth.User",on_delete=models.SET_NULL,null=True)
     category_name = models.CharField(max_length=200)
