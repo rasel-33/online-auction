@@ -45,7 +45,7 @@ class SignInForm(forms.ModelForm):
         }
 
 class ResetPasswordRequestForm(forms.Form):
-    resetCredential = forms.CharField()
+    email = forms.EmailField()
 
 class ResetPasswordForm(forms.Form):
     password = forms.CharField()

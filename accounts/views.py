@@ -87,13 +87,16 @@ def logoutUser(request):
 def password_reset_request_view(request):
     form = ResetPasswordRequestForm()
     if request.method =='POST':
-        resetCredential = request.POST['resetCredential']
+        resetCredential = request.POST['email']
+        print(resetCredential)
         if User.objects.filter(email__iexact=resetCredential).exists():
             user = User.objects.get(email=resetCredential)
 
             token = default_token_generator.make_token(user)
             subject="Reset Password-'Online-auction'"
-            message="Your password reset credentials are in this link http://127.0.0.1:8000/accounts/change-password/"+token+"/"+user.email+" tap this link to change your password"
+            message="Your password reset credentials are in this link tap this link to change your password"
+            print(message)
+            # "http://127.0.0.1:8000/accounts/change-password/"+token+"/"+user.email+
             send_mail(
                 subject,
                 message,
@@ -101,21 +104,9 @@ def password_reset_request_view(request):
                 [resetCredential],
                 fail_silently=False,
             )
-            return redirect('signin-user')
-        elif User.objects.filter(username=resetCredential).exists():
-            user = User.objects.get(username=resetCredential)
-            subject="Do you want to Change your Password??"
-            message="Your email is forcefully trying to change your password"
-            send_mail(
-                subject,
-                message,
-                settings.EMAIL_HOST_USER,
-                [user.email],
-                fail_silently=False,
-            )
-            return redirect('signin-user')
+            return redirect('link_sent')
         else:
-            messages.warning(request, "No user found with This email")
+            messages.warning(request, "No user found with Your given email or username")
             return redirect('password_reset_request')
     context ={'form':form}
     return render(request,'accounts/passwordResetRequest.html',context)
@@ -125,6 +116,21 @@ def changePassword(request,token,email):
     if user is not None:
         token_is_valid = default_token_generator.check_token(user,token)
         if token_is_valid:
-            return redirect('change-password')
-        else:
-            return redirect('signin-user')
+            return redirect('newPassword',user)
+
+
+def newPasswordView(request,user):
+    form = ResetPasswordForm()
+    if request.method == "POST":
+        if form.is_valid():
+            password = form.cleaned_data.get('password')
+            data = User.objects.get(user_id=user.user_id)
+            data.password = password
+            data.save()
+            return redirect('products')
+
+    context = {'form':form}
+    return render(request,'accounts/changePassword.html',context)
+
+def linkSentView(request):
+    return render(request,'accounts/linkSent.html')

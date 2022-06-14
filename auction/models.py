@@ -21,6 +21,9 @@ class Category(BaseModel):
     category_name = models.CharField(max_length=200)
     category_description = models.CharField(max_length=900)
 
+    def __str__(self):
+        return str(self.category_name)
+
 class Auction(BaseModel):
     created_by = models.ForeignKey("auth.User",on_delete=models.CASCADE)
     product = models.OneToOneField("auction.Product",on_delete=models.CASCADE)
