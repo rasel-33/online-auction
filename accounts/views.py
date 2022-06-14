@@ -1,3 +1,4 @@
+from django.http import HttpResponse
 from django.shortcuts import render,redirect
 from .forms import RegisterUserForm, UpdateProfileForm, SignInForm, ResetPasswordRequestForm, ResetPasswordForm
 from django.contrib.auth.models import User 
@@ -88,15 +89,17 @@ def password_reset_request_view(request):
     form = ResetPasswordRequestForm()
     if request.method =='POST':
         resetCredential = request.POST['email']
-        print(resetCredential)
+        # print(resetCredential)
         if User.objects.filter(email__iexact=resetCredential).exists():
             user = User.objects.get(email=resetCredential)
 
             token = default_token_generator.make_token(user)
-            subject="Reset Password-'Online-auction'"
-            message="Your password reset credentials are in this link tap this link to change your password"
-            print(message)
+            subject= "Reset Password-Online-auction"
+            message= "Your password reset credentials are in this link tap this link http://127.0.0.1:8000/accounts/reset_password/"+token+"/"+user.email + "/ to change your password"
+            # print(resetCredential)
             # "http://127.0.0.1:8000/accounts/change-password/"+token+"/"+user.email+
+            # subject = "Reset Password Online-auction"
+            # message = "Your password reset credentials are in this link tap this link to change your password"
             send_mail(
                 subject,
                 message,
@@ -112,25 +115,30 @@ def password_reset_request_view(request):
     return render(request,'accounts/passwordResetRequest.html',context)
 
 def changePassword(request,token,email):
-    user = User.objects.get(email=email)
+    try:
+        user = User.objects.get(email=email)
+    except User.DoesNotExist:
+        return HttpResponse("Signature invalid")
+    except User.MultipleObjectsReturned:
+        return HttpResponse("Signature invalid")
+    form = ResetPasswordForm()
     if user is not None:
         token_is_valid = default_token_generator.check_token(user,token)
         if token_is_valid:
-            return redirect('newPassword',user)
+            if request.method == "POST":
+                form = ResetPasswordForm(request.POST)
+                if form.is_valid():
+                    password = form.cleaned_data.get('password')
+                    user.set_password(password)
+                    user.save()
+                    messages.success(request,"Password was reseted")
+                    return redirect('products')
 
+            context = {'form':form}
+            return render(request,'accounts/changePassword.html',context)
+    return HttpResponse("Signature invalid")
 
-def newPasswordView(request,user):
-    form = ResetPasswordForm()
-    if request.method == "POST":
-        if form.is_valid():
-            password = form.cleaned_data.get('password')
-            data = User.objects.get(user_id=user.user_id)
-            data.password = password
-            data.save()
-            return redirect('products')
-
-    context = {'form':form}
-    return render(request,'accounts/changePassword.html',context)
+    
 
 def linkSentView(request):
     return render(request,'accounts/linkSent.html')
