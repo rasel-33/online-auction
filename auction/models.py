@@ -1,17 +1,21 @@
+from datetime import datetime
 from django.db import models
 from core.models import BaseModel,VarifiedByAbstractModel
 
 # Create your models here.
 
 class Product(VarifiedByAbstractModel, BaseModel):
-    owner = models.ForeignKey("auth.User",on_delete=models.CASCADE, related_name='products')
+
     category = models.ForeignKey("auction.Category",on_delete=models.SET_NULL,null=True)
     product_name = models.CharField(max_length=300)
+    product_image = models.ImageField(null=True)
     product_description = models.CharField(max_length=900)
     is_verified = models.BooleanField(default=False)
+    proposed_minimum_price = models.PositiveIntegerField(default=0)
     verified_time = models.DateTimeField(auto_now_add=True,null=True)
-    bid_start = models.DateTimeField()
-    bid_expiry = models.DateTimeField()
+    bid_start = models.DateTimeField(null=True)
+    bid_expiry = models.DateTimeField(null=True)
+    is_online = models.BooleanField(default=False)
 
     def __str__(self):
         return str(self.product_name)
@@ -19,7 +23,6 @@ class Product(VarifiedByAbstractModel, BaseModel):
 class Category(BaseModel):
     added_by = models.ForeignKey("auth.User",on_delete=models.SET_NULL,null=True)
     category_name = models.CharField(max_length=200)
-    category_description = models.CharField(max_length=900)
 
     def __str__(self):
         return str(self.category_name)
@@ -31,6 +34,9 @@ class Auction(BaseModel):
     bid_start = models.DateTimeField()
     bid_expiry = models.DateTimeField()
     min_required_credit = models.PositiveIntegerField()
+
+    def __str__(self):
+        return str(self.product.product_name)
 
 class BidTransaction(BaseModel):
     bidder = models.ForeignKey("auth.User",on_delete=models.SET_NULL,null=True)

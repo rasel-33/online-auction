@@ -1,0 +1,17 @@
+{% extends 'main.html' %}
+{% load static %}
+{% block content %}
+{% for item in items %}
+
+
+
+<div style="height:250px;background-color:green;">
+<a href="{% url 'auction_single_product' item.id %}"><h2>{{item.product.product_name}}</h2></a>
+<p>Product Description: {{ item.product.product_description}} </p>
+<a href="{% url 'auction_single_product' item.id %}"><img src="{{item.product.product_image.url}}" style="height:120px;"></a>
+</div>
+
+
+{% endfor %}
+
+{% endblock %}

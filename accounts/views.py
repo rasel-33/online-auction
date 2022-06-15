@@ -25,7 +25,8 @@ def registerUser(request):
             profile = Profile.objects.create(
                 user_id=user.id,
                 user_type=userdata.cleaned_data.get('user_type'),
-                gender = userdata.cleaned_data.get('gender')
+                gender = userdata.cleaned_data.get('gender'),
+                phone = userdata.cleaned_data.get('phone')
 
             )
             subject = 'Welcome to online-auction'
@@ -96,10 +97,7 @@ def password_reset_request_view(request):
             token = default_token_generator.make_token(user)
             subject= "Reset Password-Online-auction"
             message= "Your password reset credentials are in this link tap this link http://127.0.0.1:8000/accounts/reset_password/"+token+"/"+user.email + "/ to change your password"
-            # print(resetCredential)
-            # "http://127.0.0.1:8000/accounts/change-password/"+token+"/"+user.email+
-            # subject = "Reset Password Online-auction"
-            # message = "Your password reset credentials are in this link tap this link to change your password"
+            
             send_mail(
                 subject,
                 message,
@@ -131,7 +129,7 @@ def changePassword(request,token,email):
                     password = form.cleaned_data.get('password')
                     user.set_password(password)
                     user.save()
-                    messages.success(request,"Password was reseted")
+                    messages.success(request,"Password Reset Done!!")
                     return redirect('products')
 
             context = {'form':form}

@@ -7,9 +7,10 @@ class RegisterUserForm(forms.ModelForm):
     repassword = forms.CharField( max_length=200, required=True)
     user_type = forms.ChoiceField(choices=UserTypeChoices.choices)
     gender = forms.ChoiceField(choices=GenderTypeChoices.choices)
+    phone = forms.CharField(max_length=30,required=True)
     class Meta:
         model=User
-        fields=['username', 'first_name', 'last_name', 'email', 'user_type', 'gender', 'password', 'repassword']
+        fields=['username', 'first_name', 'last_name', 'email', 'phone', 'user_type', 'gender', 'password', 'repassword']
         widgets={
             'password':forms.PasswordInput(),
             'repassword':forms.PasswordInput()
