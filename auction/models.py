@@ -5,7 +5,8 @@ from core.models import BaseModel,VarifiedByAbstractModel
 # Create your models here.
 
 class Product(VarifiedByAbstractModel, BaseModel):
-
+    
+    user_id = models.ForeignKey("auth.User",on_delete=models.CASCADE,null=True)
     category = models.ForeignKey("auction.Category",on_delete=models.SET_NULL,null=True)
     product_name = models.CharField(max_length=300)
     product_image = models.ImageField(null=True)
@@ -16,6 +17,7 @@ class Product(VarifiedByAbstractModel, BaseModel):
     bid_start = models.DateTimeField(null=True)
     bid_expiry = models.DateTimeField(null=True)
     is_online = models.BooleanField(default=False)
+    ended = models.BooleanField(default=False)
 
     def __str__(self):
         return str(self.product_name)

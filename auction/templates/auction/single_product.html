@@ -3,13 +3,25 @@
 {% block content %}
 <h1>Single Product</h>
 <h3>{{ item.product_name }}</h3>
-<p>Product Description :{{ item.description }}</p>
+<img src="{{item.product_image.url}}">
+<p>Product Description : {{ item.product_description }}</p>
 <p>Varified Status : {{ item.is_verified }} </p>
-<p>Minimum Proposed Price : {{ item.minimum_proposed_price }} </p>
+<p>Minimum Proposed Price : {{ item.proposed_minimum_price }} </p>
 <p>Proposed Start Time: {{ item.bid_start}} </p>
 <p>Proposed End Time: {{ item.bid_expiry}} </p>
 <p>is_online : {{ item.is_online }}</p>
+<form method="POST">
+    {% csrf_token %}
 
+    {% if request.user.profile.user_type == "SELLER" and request.user.id == item.user_id %}
+        {% if item.is_online == False %}
+            <button><a href={% url 'product_update' item.id %}>Update</a></button>
+        {% endif %}
+        {% if item.ended == False%}
+        <button>Delete</button>
+        {% endif %}
+    {% endif %}
+</form>
 
 {% endblock content %}
 
