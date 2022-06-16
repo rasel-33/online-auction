@@ -1,5 +1,7 @@
 from django.shortcuts import render, redirect
+from django.urls import reverse
 from django.utils import timezone
+from requests import delete
 from .forms import AddProductForm, UpdateProductForm
 from auction.models import Product, Auction
 from django.contrib import messages
@@ -20,7 +22,9 @@ def addproduct(request):
     if request.method == 'POST':
         form = AddProductForm(request.POST, request.FILES)
         if form.is_valid() and form.cleaned_data.get('bid_start') > timezone.now() and form.cleaned_data.get('bid_expiry') > form.cleaned_data.get('bid_start'):
-            form.save()
+            instance = form.save()
+            instance.user_id=request.user.id
+            instance.save()
             return redirect('home')
         else:
             messages.info(request, 'Your Bid Start Time and Expiry Time is contradictory')
@@ -31,8 +35,15 @@ def addproduct(request):
 
 def singleproduct(request,pk):
     item = Product.objects.get(id=pk)
-    # print(request.user.id)
-    context = {'item':item}
+    upd = False
+    dlt = False
+    if not item.is_online or item.auction.bid_expiry > timezone.now():
+        upd = True
+    if Auction.objects.filter(id=pk).exists():
+        auction_item = Auction.objects.get(id=pk)
+        if auction_item.bid_expiry > timezone.now():
+            dlt = True
+    context = {'item':item,'upd':upd,'dlt':dlt}
     return render(request,'auction/single_product.html',context)
 
 def live_auction_products(request):
@@ -47,27 +58,18 @@ def single_auction_product(request,pk):
 
 
 def update_product(request,pk):
-    form = UpdateProductForm()
+    item = Product.objects.get(id=pk)
+    form = UpdateProductForm(instance=item)
     if request.method == 'POST':
-        form = UpdateProductForm(request.POST, request.FILES)
+        form = UpdateProductForm(request.POST, request.FILES, instance=item)
         if form.is_valid():
-            item = Product.objects.get(id=pk)
-            item.category = form.cleaned_data.get('category')
-            item.product_name = form.cleaned_data.get('product_name')
-            item.product_image = form.cleaned_data.get('product_image')
-            item.product_description = form.cleaned_data.get('product_description')
-            item.proposed_minimum_price = form.cleaned_data.get('proposed_minimum_price')
-            item.bid_start = form.cleaned_data.get('bid_start')
-            item.bid_expiry = form.cleaned_data.get('bid_expiry')
-            item.save()
+
+            form.save()
             messages.info(request,'Product information was updated')
-            return redirect('products')
+            # return reverse_lazy('product_update', args=item.id)
+            return redirect(reverse('single-product', args=[item.id]))
 
 
     context = {'form':form}
     return render(request,'auction/update_product.html',context)
-
-
-
-
 

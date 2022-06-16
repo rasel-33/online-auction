@@ -9,6 +9,7 @@
 <a href="{% url 'auction_single_product' item.id %}"><h2>{{item.product.product_name}}</h2></a>
 <p>Product Description: {{ item.product.product_description}} </p>
 <a href="{% url 'auction_single_product' item.id %}"><img src="{{item.product.product_image.url}}" style="height:120px;"></a>
+<p>Time Remaining :{{item.bid_expiry | timeuntil }} </p>
 </div>
 
 

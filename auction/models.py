@@ -6,7 +6,7 @@ from core.models import BaseModel,VarifiedByAbstractModel
 
 class Product(VarifiedByAbstractModel, BaseModel):
     
-    user_id = models.ForeignKey("auth.User",on_delete=models.CASCADE,null=True)
+    user = models.ForeignKey("auth.User",on_delete=models.CASCADE,null=True)
     category = models.ForeignKey("auction.Category",on_delete=models.SET_NULL,null=True)
     product_name = models.CharField(max_length=300)
     product_image = models.ImageField(null=True)

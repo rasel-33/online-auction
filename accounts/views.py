@@ -45,16 +45,23 @@ def registerUser(request):
     return render(request,'accounts/registerUser.html',context)
 
 def updateProfile(request):
-    updatedata = UpdateProfileForm(request.POST)
+    profile = Profile.objects.get(user_id=request.user.id)
+    updatedata = UpdateProfileForm(initial={
+        'first_name': profile.user.first_name,
+        'last_name': profile.user.last_name,
+        'user_image':profile.user_image,
+        'phone': profile.phone,
+        'location': profile.location
+    })
     if request.method == 'POST':
-        
+        updatedata = UpdateProfileForm(request.POST,request.FILES)
         if updatedata.is_valid():
-            profile = Profile.objects.get(user_id=request.user.id)
+
             profile.user.first_name = updatedata.cleaned_data.get('first_name')
             profile.user.last_name = updatedata.cleaned_data.get('last_name')
-            profile.user.user_image = updatedata.cleaned_data.get('user_image')
-            profile.user.phone = updatedata.cleaned_data.get('phone')
-            profile.user.location = updatedata.cleaned_data.get('location')
+            profile.user_image = updatedata.cleaned_data.get('user_image')
+            profile.phone = updatedata.cleaned_data.get('phone')
+            profile.location = updatedata.cleaned_data.get('location')
             profile.user.save()
             print(profile)
             profile.save()
