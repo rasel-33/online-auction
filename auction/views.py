@@ -90,7 +90,9 @@ def no_permission(request):
     return render(request,'auction/no_permission.html')
 
 def my_products(request):
-    # auctionItems = Auction.objects.get()
-    context = {}
+    my_auction_items = Auction.objects.filter(product__user_id=request.user.id,bid_expiry__gte=timezone.now())
+    myitem = Product.objects.filter(user_id=request.user.id,is_online=False,is_rejected=False)
+    rejecteditems = Product.objects.filter(user_id=request.user.id,is_rejected=True)
+    context = {'items':my_auction_items,'pendingitems':myitem,'rejecteditems':rejecteditems}
     return render(request,'auction/my_products.html',context)
 

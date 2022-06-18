@@ -2,4 +2,27 @@
 
 {% block content %}
 <h1>My Products</h1>
+{% for item in items %}
+    <h4>{{item.product.product_name}}</h4>
+    <p>{{item.product.product_description}}</p>
+
+{% endfor %}
+<hr>
+
+<h1>My pending Products</h1>
+{% for item in pendingitems %}
+    <h4>{{item.product_name}}</h4>
+    <p>{{item.product_description}}</p>
+
+{% endfor %}
+
+<hr>
+
+<h1>My Rejected Products</h1>
+{% for item in rejecteditems %}
+    <h4>{{item.product_name}}</h4>
+    <p>{{item.product_description}}</p>
+
+{% endfor %}
+
 {% endblock %}

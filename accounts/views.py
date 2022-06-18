@@ -100,10 +100,10 @@ def password_reset_request_view(request):
         # print(resetCredential)
         if User.objects.filter(email__iexact=resetCredential).exists():
             user = User.objects.get(email=resetCredential)
-
+            username = user.username
             token = default_token_generator.make_token(user)
             subject= "Reset Password-Online-auction"
-            message= "Your password reset credentials are in this link tap this link http://127.0.0.1:8000/accounts/reset_password/"+token+"/"+user.email + "/ to change your password"
+            message= "In case you forgot your username :"+username+"\nYour password reset credentials are in this link click this link http://127.0.0.1:8000/accounts/reset_password/"+token+"/"+user.email + "/ to change your password"
             
             send_mail(
                 subject,
@@ -137,7 +137,7 @@ def changePassword(request,token,email):
                     user.set_password(password)
                     user.save()
                     messages.success(request,"Password Reset Done!!")
-                    return redirect('products')
+                    return redirect('signin-user')
 
             context = {'form':form}
             return render(request,'accounts/changePassword.html',context)
