@@ -10,4 +10,7 @@ urlpatterns = [
     path('auction_products/',views.live_auction_products,name="auction_products"),
     path('auction_single_product/<str:pk>/',views.single_auction_product,name="auction_single_product"),
     path('product_update/<str:pk>/',views.update_product,name="product_update"),
+    path('delete_product/<str:pk>/',views.delete_product,name="delete_product"),
+    path('no_permission',views.no_permission,name="no_permission"),
+    path('my_prouducts',views.my_products,name="my_products"),
 ]

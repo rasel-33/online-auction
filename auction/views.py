@@ -6,6 +6,7 @@ from .forms import AddProductForm, UpdateProductForm
 from auction.models import Product, Auction
 from django.contrib import messages
 
+from django.db.models import Q
 
 #Create your views here.
 
@@ -13,11 +14,14 @@ def home(request):
     return render(request,'main.html')
 
 def products(request):
-    itemsList = Product.objects.all().exclude(is_online=True).exclude(ended=True)
+    # exclude_filter = ~Q(is_online=True) & ~Q(is_verified=False)
+    itemsList = Product.objects.exclude(is_online=True)
     context = {'items':itemsList}
     return render(request,'auction/products.html',context)
 
 def addproduct(request):
+    if request.user.profile.user_type == "BUYER":
+        return redirect('no_permission')
     form = AddProductForm()
     if request.method == 'POST':
         form = AddProductForm(request.POST, request.FILES)
@@ -35,14 +39,13 @@ def addproduct(request):
 
 def singleproduct(request,pk):
     item = Product.objects.get(id=pk)
-    upd = False
-    dlt = False
-    if not item.is_online or item.auction.bid_expiry > timezone.now():
-        upd = True
-    if Auction.objects.filter(id=pk).exists():
-        auction_item = Auction.objects.get(id=pk)
-        if auction_item.bid_expiry > timezone.now():
-            dlt = True
+    upd = True
+    dlt = True
+    if item.is_online:
+        if Auction.objects.filter(product_id=pk).exists():
+            upd = False
+            if item.auction.bid_expiry < timezone.now():
+                dlt = False
     context = {'item':item,'upd':upd,'dlt':dlt}
     return render(request,'auction/single_product.html',context)
 
@@ -58,6 +61,8 @@ def single_auction_product(request,pk):
 
 
 def update_product(request,pk):
+    if request.user.profile.user_type == "BUYER":
+        return redirect('no_permission')
     item = Product.objects.get(id=pk)
     form = UpdateProductForm(instance=item)
     if request.method == 'POST':
@@ -66,10 +71,26 @@ def update_product(request,pk):
 
             form.save()
             messages.info(request,'Product information was updated')
-            # return reverse_lazy('product_update', args=item.id)
             return redirect(reverse('single-product', args=[item.id]))
-
-
     context = {'form':form}
     return render(request,'auction/update_product.html',context)
+
+def delete_product(request,pk):
+    if request.user.profile.user_type == "BUYER":
+        return redirect('no_permission')
+    item = Product.objects.get(id=pk)
+    if request.method == 'POST':
+        item.delete()
+        return redirect('products')
+
+    context = {'item':item}
+    return render(request,'auction/confirm_delete.html',context)
+
+def no_permission(request):
+    return render(request,'auction/no_permission.html')
+
+def my_products(request):
+    # auctionItems = Auction.objects.get()
+    context = {}
+    return render(request,'auction/my_products.html',context)
 

@@ -22,7 +22,7 @@
             <button><a href="{% url 'product_update' item.id %}">Update</a></button>
         {% endif %}
         {% if dlt %}
-        <button><a href="">Delete</a></button>
+        <button><a href="{% url 'delete_product' item.id %}">Delete</a></button>
         {% endif %}
     {% endif %}
 </form>
