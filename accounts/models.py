@@ -15,7 +15,7 @@ class GenderTypeChoices(models.TextChoices):
 class Profile(VarifiedByAbstractModel, BaseModel):
     user = models.OneToOneField('auth.User', on_delete=models.CASCADE)
     user_type = models.CharField(max_length=200,choices=UserTypeChoices.choices)
-    user_image = models.ImageField(default='default.jpg',upload_to='profiles')
+    user_image = models.ImageField(default='default.png',upload_to='profiles')
     phone = models.CharField(max_length=200, null=True)
     gender = models.CharField(max_length=200, choices=GenderTypeChoices.choices, null=True,blank=True)
     location = models.TextField(null=True)

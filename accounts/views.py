@@ -26,7 +26,8 @@ def registerUser(request):
                 user_id=user.id,
                 user_type=userdata.cleaned_data.get('user_type'),
                 gender = userdata.cleaned_data.get('gender'),
-                phone = userdata.cleaned_data.get('phone')
+                phone = userdata.cleaned_data.get('phone'),
+                location = userdata.cleaned_data.get('location')
 
             )
             subject = 'Welcome to online-auction'
@@ -147,3 +148,10 @@ def changePassword(request,token,email):
 
 def linkSentView(request):
     return render(request,'accounts/linkSent.html')
+
+def profile_view(request):
+    user = Profile.objects.filter(user_id=request.user.id).first()
+    print(user)
+    context = {'profile':user}
+    return render(request,'accounts/myprofile.html',context)
+

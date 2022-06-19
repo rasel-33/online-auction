@@ -13,13 +13,11 @@ class Product(VarifiedByAbstractModel, BaseModel):
     product_description = models.CharField(max_length=900)
     is_rejected = models.BooleanField(default=False)
     is_verified = models.BooleanField(default=False)
+    is_online = models.BooleanField(default=False)
     proposed_minimum_price = models.PositiveIntegerField(default=0)
     verified_time = models.DateTimeField(auto_now_add=True,null=True)
     bid_start = models.DateTimeField(null=True)
     bid_expiry = models.DateTimeField(null=True)
-    is_online = models.BooleanField(default=False)
-
-    ended = models.BooleanField(default=False)
 
     def __str__(self):
         return str(self.product_name)
@@ -38,6 +36,7 @@ class Auction(BaseModel):
     bid_start = models.DateTimeField()
     bid_expiry = models.DateTimeField()
     min_required_credit = models.PositiveIntegerField()
+    ended = models.BooleanField(default=False)
 
     def __str__(self):
         return str(self.product.product_name)
