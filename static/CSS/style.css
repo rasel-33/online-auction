@@ -1,0 +1,10 @@
+.live_auction_table{
+    margin: 40px;
+    margin-right: 40px;
+    border: 2px solid green !important;
+    border-radius: 10px !important;
+}
+.table_image{
+    height: 30px;
+    width: 20px;
+}

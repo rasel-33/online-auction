@@ -8,9 +8,11 @@ class UserTypeChoices(models.TextChoices):
     SELLER = 'SELLER'
     BUYER = 'BUYER'
 
+
 class GenderTypeChoices(models.TextChoices):
     MALE = 'MALE'
     FEMALE = 'FEMALE'
+
 
 class Profile(VarifiedByAbstractModel, BaseModel):
     user = models.OneToOneField('auth.User', on_delete=models.CASCADE)
@@ -24,11 +26,11 @@ class Profile(VarifiedByAbstractModel, BaseModel):
         return self.user.username
 
 
-
 class Credit(BaseModel):
     user = models.OneToOneField("auth.User", on_delete=models.CASCADE)
     balance = models.PositiveIntegerField(default=0)
     expiry = models.DateTimeField()
+
 
 class CreditTransaction(BaseModel):
     credit = models.ForeignKey("accounts.Credit",on_delete=models.SET_NULL,null=True)

@@ -11,6 +11,7 @@ from django.conf import settings
 from django.contrib.auth.tokens import default_token_generator
 # Create your views here.
 
+
 def registerUser(request):
     userdata = RegisterUserForm()
     if request.method == "POST":

@@ -3,12 +3,14 @@ from django import forms
 from django.contrib.auth.models import User
 from accounts.models import GenderTypeChoices, UserTypeChoices, Profile
 
+
 class RegisterUserForm(forms.ModelForm):
     repassword = forms.CharField( max_length=200, required=True)
     user_type = forms.ChoiceField(choices=UserTypeChoices.choices)
     gender = forms.ChoiceField(choices=GenderTypeChoices.choices)
     phone = forms.CharField(max_length=30,required=True)
     location = forms.CharField()
+
     class Meta:
         model=User
         fields=['username', 'first_name', 'last_name', 'email', 'phone', 'user_type', 'gender', 'location', 'password', 'repassword']
@@ -28,12 +30,17 @@ class RegisterUserForm(forms.ModelForm):
             self._errors['username'] = ["Email already exists"]
         return form_data
 
+
+
 class UpdateProfileForm(forms.ModelForm):
     first_name = forms.CharField(max_length=200, required=True)
     last_name = forms.CharField(max_length=200, required=True)
+
     class Meta:
         model=Profile
         fields=['first_name', 'last_name', 'user_image', 'phone', 'location']
+
+
 
 class SignInForm(forms.ModelForm):
     username = forms.CharField(max_length=200,required=True)
