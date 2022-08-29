@@ -1,7 +1,6 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.utils import timezone
-from requests import delete
 from .forms import AddProductForm, UpdateProductForm, PlaceBidForm
 from auction.models import Product, Auction, BidTransaction
 from django.contrib import messages
@@ -131,6 +130,3 @@ def place_bid(request,pk):
             # )
 
     return render(request,'auction/auction_single_product.html')
-
-
-
