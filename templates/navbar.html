@@ -12,49 +12,119 @@
 <!--    <a href="{% url 'signin-user' %}">Sign In</a>&nbsp;&nbsp;&nbsp;-->
 <!--    <a href="{% url 'logout-user' %}">Logout</a>&nbsp;&nbsp;&nbsp;-->
 <!--</ul>-->
-{% load static %}
-<nav class="navbar navbar-inverse">
-  <div class="container-fluid">
-    <div class="navbar-header">
-      <a class="navbar-brand" href="{% url 'home' %}">OnlineAuction</a>
-    </div>
-    <ul class="nav navbar-nav">
-      <li class="active"><a href="{% url 'home' %}">Home</a></li>
-<!--if a user is seller then this dropdown will be shown-->
-        {% if request.user.profile.user_type == "SELLER" %}
-        <li class="dropdown">
-          <a class="dropdown-toggle" data-toggle="dropdown" href="#">Activities
-          <span class="caret"></span></a>
-          <ul class="dropdown-menu">
-            <li><a href="{% url 'my_products' %}">My Products</a></li>
-            <li><a href="{% url 'add-product' %}">Add Product</a></li>
-            <li><a href="#">Feedback</a></li>
-          </ul>
-        </li>
-        {% elif request.user.profile.user_type == "BUYER" %}
-        <li class="dropdown">
-          <a class="dropdown-toggle" data-toggle="dropdown" href="#">Activities
-          <span class="caret"></span></a>
-          <ul class="dropdown-menu">
-            <li><a href="{% url 'my_products' %}">My Products</a></li>
-            <li><a href="{% url 'add-product' %}">Add Product</a></li>
-            <li><a href="#">Feedback</a></li>
-          </ul>
-        </li>
-        {% endif %}
 
-      <li><a href="{% url 'auction_products' %}">Live Auction</a></li>
-      <li><a href="{% url 'products' %}">Upcoming</a></li>
-    </ul>
-    <ul class="nav navbar-nav navbar-right">
-<!--      if anyone is loggged in then these two will not be seen and logout page will face out-->
-      {% if not request.user.is_authenticated %}
-      <li><a href="{% url 'register-user' %}"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
-      <li><a href="{% url 'signin-user' %}"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
-      {% else %}
-      <li><a href="{% url 'profile' %}"><span class="glyphicon glyphicon-profile"></span> Profile</a></li>
-      <li><a href="{% url 'logout-user' %}"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
-      {% endif %}
-    </ul>
-  </div>
+
+<!--{% load static %}-->
+<!--<nav class="navbar navbar-inverse">-->
+<!--  <div class="container-fluid">-->
+<!--    <div class="navbar-header">-->
+<!--      <a class="navbar-brand" href="{% url 'home' %}">OnlineAuction</a>-->
+<!--    </div>-->
+<!--    <ul class="nav navbar-nav">-->
+<!--      <li class="active"><a href="{% url 'home' %}">Home</a></li>-->
+<!--&lt;!&ndash;if a user is seller then this dropdown will be shown&ndash;&gt;-->
+<!--        {% if request.user.profile.user_type == "SELLER" %}-->
+    <!--        <li class="dropdown">-->
+    <!--          <a class="dropdown-toggle" data-toggle="dropdown" href="#">Activities-->
+    <!--          <span class="caret"></span></a>-->
+    <!--          <ul class="dropdown-menu">-->
+    <!--            <li><a href="{% url 'my_products' %}">My Products</a></li>-->
+    <!--            <li><a href="{% url 'add-product' %}">Add Product</a></li>-->
+    <!--            <li><a href="#">Feedback</a></li>-->
+    <!--          </ul>-->
+    <!--        </li>-->
+    <!--        {% elif request.user.profile.user_type == "BUYER" %}-->
+    <!--        <li class="dropdown">-->
+    <!--          <a class="dropdown-toggle" data-toggle="dropdown" href="#">Activities-->
+    <!--          <span class="caret"></span></a>-->
+    <!--          <ul class="dropdown-menu">-->
+    <!--            <li><a href="{% url 'my_products' %}">My Products</a></li>-->
+    <!--            <li><a href="{% url 'add-product' %}">Add Product</a></li>-->
+    <!--            <li><a href="#">Feedback</a></li>-->
+    <!--          </ul>-->
+    <!--        </li>-->
+    <!--        {% endif %}-->
+
+<!--      <li><a href="{% url 'auction_products' %}">Live Auction</a></li>-->
+<!--      <li><a href="{% url 'products' %}">Upcoming</a></li>-->
+<!--    </ul>-->
+<!--    <ul class="nav navbar-nav navbar-right">-->
+<!--&lt;!&ndash;      if anyone is loggged in then these two will not be seen and logout page will face out&ndash;&gt;-->
+<!--      {% if not request.user.is_authenticated %}-->
+    <!--      <li><a href="{% url 'register-user' %}"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>-->
+    <!--      <li><a href="{% url 'signin-user' %}"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>-->
+    <!--      {% else %}-->
+    <!--      <li><a href="{% url 'profile' %}"><span class="glyphicon glyphicon-profile"></span> Profile</a></li>-->
+    <!--      <li><a href="{% url 'logout-user' %}"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>-->
+    <!--      {% endif %}-->
+<!--    </ul>-->
+<!--  </div>-->
+<!--</nav>-->
+
+{% load static %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="{% url 'home' %}">Online Auction</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="{% url 'home' %}">Home</a>
+                </li>
+                {% if request.user.is_authenticated %}
+                    {% if request.user.profile.user_type == "SELLER" %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                               data-bs-toggle="dropdown" aria-expanded="false">
+                                Activities
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+
+                                <li><a class="dropdown-item" href="{% url 'my_products' %}">My Products</a></li>
+                                <li><a class="dropdown-item" href="{% url 'add-product' %}">Add Products</a></li>
+                                <li><a class="dropdown-item" href="#">Feedback</a></li>
+                            </ul>
+                        </li>
+                    {% elif request.user.profile.user_type == "BUYER" %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                               data-bs-toggle="dropdown" aria-expanded="false">
+                                Activities
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+
+                                <li><a class="dropdown-item" href="#">Placed Bid</a></li>
+                                <li><a class="dropdown-item" href="#">Won Auction</a></li>
+                                <li><a class="dropdown-item" href="#">Feedback</a></li>
+                            </ul>
+                        </li>
+                    {% endif %}
+                {% endif %}
+                <li class="nav-item">
+
+                <li><a class="nav-link" href="{% url 'auction_products' %}">Live Auction</a></li>
+                <li><a class="nav-link" href="{% url 'products' %}">Upcoming</a></li>
+                </li>
+
+            </ul>
+
+            <ul class="nav navbar-nav navbar-right">
+                {% if not request.user.is_authenticated %}
+                    <li class="nav-item"><a class="nav-link" href="{% url 'register-user' %}"><i class="bi bi-door-open-fill"></i> Sign
+                        Up</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'signin-user' %}"><i class="bi bi-box-arrow-in-left"></i> Log in</a></li>
+
+
+                {% else %}
+                    <li class="nav-item"><a class="nav-link" href="{% url 'profile' %}">
+                        <i class="bi bi-person-circle"></i> Profile</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'logout-user' %}">
+                        <i class="bi bi-box-arrow-in-right"></i> Logout</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
 </nav>

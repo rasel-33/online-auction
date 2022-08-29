@@ -10,8 +10,10 @@
 <!--<p><a href="{% url 'password_reset_request' %}">Forgot Password</a></p> {% endcomment %}-->
 
 
-<div class="global-container">
-    <div class="card login-form">
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-4">
+            <div class="card login-form">
         <div class="card-body">
             <h1 class="card-title text-center">LOGIN</h1>
             <div class="card-text">
@@ -26,11 +28,15 @@
                         <a href="{% url 'password_reset_request' %}" style="float: right;font-size: 12px;">Forgot Password</a>
                         <input type="password" class="form-control form-control-sm" id="exampleInputPassword" name="password" placeholder="Password">
                     </div>
-                    <button type="submit" class="btn btn-primary btn-block">Sign in</button>
+                    <div class="d-grid mt-2">
+                        <button type="submit" class="btn btn-primary">Sign in</button>
+                    </div>
 
-                    <div class="signup">Don't have an account? <a href="{% url 'register-user'%}">Create Account<a></div>
+                    <div class="signup">Don't have an account? <a href="{% url 'register-user'%}">Create Account</a></div>
                 </form>
             </div>
+        </div>
+    </div>
         </div>
     </div>
 </div>
