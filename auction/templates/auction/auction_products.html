@@ -2,35 +2,64 @@
 {% load static %}
 {% block content %}
 
-<h1 style="text-align:center;">Auction Live Products</h1><hr>
+    <h1 style="text-align:center;">Auction Live Products</h1>
+    <hr>
 
-<table class="table table-hover table-dark live_auction_table">
-    <thead>
-        <tr>
-            <th scope="col">#</th>
-            <th scope="col">Product Name</th>
-            <th scope="col">Category</th>
-            <th scope="col">Base Bid</th>
-            <th scope="col">Maximum BId</th>
-            <th scope="col">Image</th>
-            <th scope="col">Expiry</th>
-        </tr>
-    </thead>
-    <tbody>
+{#    <table class="table table-hover table-dark live_auction_table">#}
+{#        <thead>#}
+{#            <tr>#}
+{#                <th scope="col">#</th>#}
+{#                <th scope="col">Product Name</th>#}
+{#                <th scope="col">Category</th>#}
+{#                <th scope="col">Base Bid</th>#}
+{#                <th scope="col">Maximum BId</th>#}
+{#                <th scope="col">Image</th>#}
+{#                <th scope="col">Expiry</th>#}
+{#            </tr>#}
+{#        </thead>#}
+{#        <tbody>#}
+{##}
+{#            {% for item in items %}#}
+{#            <tr>#}
+{#                <th scope="row">{{ forloop.counter }}</th>#}
+{#                <td><a href="{% url 'auction_single_product' item.id %}">{{item.product.product_name}}</a></td>#}
+{#                <td>{{item.product.category}}</td>#}
+{#                <td>{{item.min_bid_price}}</td>#}
+{#                <td>{{item.min_bid_price}}</td>#}
+{#                <td><a href="{% url 'auction_single_product' item.id %}"> <img src="{{item.product.product_image.url}}" class="table_image"></a></td>#}
+{#                <td>{{item.bid_expiry}}</td>#}
+{#            </tr>#}
+{##}
+{#            {% endfor %}#}
+{#        </tbody>#}
+{#    </table>#}
+    {% for item in items %}
 
-        {% for item in items %}
-        <tr>
-            <th scope="row">{{ forloop.counter }}</th>
-            <td><a href="{% url 'auction_single_product' item.id %}">{{item.product.product_name}}</a></td>
-            <td>{{item.product.category}}</td>
-            <td>{{item.min_bid_price}}</td>
-            <td>{{item.min_bid_price}}</td>
-            <td><a href="{% url 'auction_single_product' item.id %}"> <img src="{{item.product.product_image.url}}" class="table_image"></a></td>
-            <td>{{item.bid_expiry}}</td>
-        </tr>
-
-        {% endfor %}
-    </tbody>
-</table>
+    <div class="row shadow-lg p-3 mb-5 bg-body rounded" style="margin: 15px;">
+        <div class="col-sm-8">
+            <div class="card"  style="height: 300px;">
+                <div class="card-body">
+                    <h5 class="card-title"><a href="{% url 'auction_single_product' item.id %}">{{item.product.product_name}}</a></h5>
+                    <p class="card-text">Owner : <a href="{% url 'profile' item.product.user.id %}" >{{ item.product.user.username }}</a></p>
+                    <p class="card-text">Category : {{ item.product.category }}</p>
+                    <p class="card-text">Base Bid Price : {{ item.min_bid_price }}</p>
+                    <p class="card-text">Latest Bid : {{ item.min_bid_price }}</p>
+                    <p class="card-text">Expires On : {{ item.bid_expiry }}</p>
+                    <a href="{% url 'auction_single_product' item.id %}" class="btn btn-success">Place Bid</a>
+                    <a href="#" class="btn btn-primary">Report It</a>
+{#                    TODO: Make it available#}
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="card" style="height: 300px;">
+                <div class="card-body">
+                    <img src="{{item.product.product_image.url}}" style="width: 50%; justify-content: center">
+{#                    TODO: image center#}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
 
 {% endblock %}

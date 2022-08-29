@@ -109,6 +109,13 @@ def my_products(request):
     context = {'items':my_auction_items,'pendingitems':myitem,'rejecteditems':rejecteditems}
     return render(request,'auction/my_products.html',context)
 
+def auction_history(request, pk):
+    history_items = BidTransaction.objects.filter(bidder_id=pk)
+    context = {'histroy_items':history_items}
+    return render(request, 'auction/my_history.html', context)
+
+
+
 
 def place_bid(request,pk):
     if not request.user.authenticated:
