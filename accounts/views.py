@@ -1,7 +1,7 @@
 from django.http import HttpResponse
-from django.shortcuts import render,redirect
+from django.shortcuts import render, redirect
 from .forms import RegisterUserForm, UpdateProfileForm, SignInForm, ResetPasswordRequestForm, ResetPasswordForm
-from django.contrib.auth.models import User 
+from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth import login, authenticate, logout
 from .models import Profile
@@ -9,6 +9,8 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.core.mail import send_mail
 from django.conf import settings
 from django.contrib.auth.tokens import default_token_generator
+
+
 # Create your views here.
 
 
@@ -18,21 +20,21 @@ def registerUser(request):
         userdata = RegisterUserForm(request.POST)
         if userdata.is_valid():
             user = User.objects.create_user(username=userdata.cleaned_data.get('username'),
-            first_name=userdata.cleaned_data.get('first_name'),
-            last_name=userdata.cleaned_data.get('last_name'),
-            email=userdata.cleaned_data.get('email'),
-            password=userdata.cleaned_data.get('password')
-            )
+                                            first_name=userdata.cleaned_data.get('first_name'),
+                                            last_name=userdata.cleaned_data.get('last_name'),
+                                            email=userdata.cleaned_data.get('email'),
+                                            password=userdata.cleaned_data.get('password')
+                                            )
             profile = Profile.objects.create(
                 user_id=user.id,
                 user_type=userdata.cleaned_data.get('user_type'),
-                gender = userdata.cleaned_data.get('gender'),
-                phone = userdata.cleaned_data.get('phone'),
-                location = userdata.cleaned_data.get('location')
+                gender=userdata.cleaned_data.get('gender'),
+                phone=userdata.cleaned_data.get('phone'),
+                location=userdata.cleaned_data.get('location')
 
             )
             subject = 'Welcome to online-auction'
-            message = "Let's have an online virtual auction environment" 
+            message = "Let's have an online virtual auction environment"
             send_mail(
                 subject,
                 message,
@@ -43,22 +45,23 @@ def registerUser(request):
 
             return redirect('products')
 
-    context = {'form':userdata}
-    return render(request,'accounts/registerUser.html',context)
+    context = {'form': userdata}
+    return render(request, 'accounts/registerUser.html', context)
+
 
 def updateProfile(request):
     profile = Profile.objects.get(user_id=request.user.id)
+    fullname = profile.user.first_name + profile.user.last_name
     updatedata = UpdateProfileForm(initial={
         'first_name': profile.user.first_name,
         'last_name': profile.user.last_name,
-        'user_image':profile.user_image,
+        'user_image': profile.user_image,
         'phone': profile.phone,
         'location': profile.location
     })
     if request.method == 'POST':
-        updatedata = UpdateProfileForm(request.POST,request.FILES)
+        updatedata = UpdateProfileForm(request.POST, request.FILES)
         if updatedata.is_valid():
-
             profile.user.first_name = updatedata.cleaned_data.get('first_name')
             profile.user.last_name = updatedata.cleaned_data.get('last_name')
             profile.user_image = updatedata.cleaned_data.get('user_image')
@@ -68,8 +71,11 @@ def updateProfile(request):
             print(profile)
             profile.save()
             return redirect('products')
-    context = {'form':updatedata}
-    return render(request,'accounts/updateProfile.html',context)
+
+
+    context = {'form': updatedata, 'profile':profile, 'fullname':fullname}
+    return render(request, 'accounts/updateProfile.html', context)
+
 
 def signinUser(request):
     signinForm = SignInForm()
@@ -84,29 +90,31 @@ def signinUser(request):
                 messages.info(request, f"Successfully logged in, Welcome {username}.")
                 return redirect('products')
             else:
-                messages.error(request,"Invalid username or password.")
+                messages.error(request, "Invalid username or password.")
         else:
-            messages.error(request,"Invalid username or password.")
+            messages.error(request, "Invalid username or password.")
 
-    context = {'form':signinForm}
-    return render(request,'accounts/signIn.html',context)
+    context = {'form': signinForm}
+    return render(request, 'accounts/signIn.html', context)
+
 
 def logoutUser(request):
     logout(request)
     return redirect('signin-user')
 
+
 def password_reset_request_view(request):
     form = ResetPasswordRequestForm()
-    if request.method =='POST':
+    if request.method == 'POST':
         resetCredential = request.POST['email']
         # print(resetCredential)
         if User.objects.filter(email__iexact=resetCredential).exists():
             user = User.objects.get(email=resetCredential)
             username = user.username
             token = default_token_generator.make_token(user)
-            subject= "Reset Password-Online-auction"
-            message= "In case you forgot your username :"+username+"\nYour password reset credentials are in this link click this link http://127.0.0.1:8000/accounts/reset_password/"+token+"/"+user.email + "/ to change your password"
-            
+            subject = "Reset Password-Online-auction"
+            message = "In case you forgot your username :" + username + "\nYour password reset credentials are in this link click this link http://127.0.0.1:8000/accounts/reset_password/" + token + "/" + user.email + "/ to change your password"
+
             send_mail(
                 subject,
                 message,
@@ -118,10 +126,11 @@ def password_reset_request_view(request):
         else:
             messages.warning(request, "No user found with Your given email or username")
             return redirect('password_reset_request')
-    context ={'form':form}
-    return render(request,'accounts/passwordResetRequest.html',context)
+    context = {'form': form}
+    return render(request, 'accounts/passwordResetRequest.html', context)
 
-def changePassword(request,token,email):
+
+def changePassword(request, token, email):
     try:
         user = User.objects.get(email=email)
     except User.DoesNotExist:
@@ -130,7 +139,7 @@ def changePassword(request,token,email):
         return HttpResponse("Signature invalid")
     form = ResetPasswordForm()
     if user is not None:
-        token_is_valid = default_token_generator.check_token(user,token)
+        token_is_valid = default_token_generator.check_token(user, token)
         if token_is_valid:
             if request.method == "POST":
                 form = ResetPasswordForm(request.POST)
@@ -138,21 +147,21 @@ def changePassword(request,token,email):
                     password = form.cleaned_data.get('password')
                     user.set_password(password)
                     user.save()
-                    messages.success(request,"Password Reset Done!!")
+                    messages.success(request, "Password Reset Done!!")
                     return redirect('signin-user')
 
-            context = {'form':form}
-            return render(request,'accounts/changePassword.html',context)
+            context = {'form': form}
+            return render(request, 'accounts/changePassword.html', context)
     return HttpResponse("Signature invalid")
 
-    
 
 def linkSentView(request):
-    return render(request,'accounts/linkSent.html')
+    return render(request, 'accounts/linkSent.html')
 
-def profile_view(request):
-    user = Profile.objects.filter(user_id=request.user.id).first()
-    print(user)
-    context = {'profile':user}
-    return render(request,'accounts/myprofile.html',context)
 
+def profile_view(request, pk):
+    profile = Profile.objects.get(user_id=pk)
+    # print(user)
+    fullname = profile.user.first_name + " " + profile.user.last_name
+    context = {'profile': profile, 'fullname':fullname}
+    return render(request, 'accounts/myprofile.html', context)

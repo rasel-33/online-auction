@@ -1,0 +1,32 @@
+{% extends 'main.html' %}
+
+{% block content %}
+    <h1 style="text-align: center">The List Provides Information about Auction You Participated</h1>
+    <div style="margin: 30px;">
+        <table class="table" style="border: 3px green solid">
+            <thead>
+            <tr>
+                <th scope="col">Auction</th>
+                <th scope="col">Product</th>
+                <th scope="col">Bid Amount</th>
+                <th scope="col">Bid Time</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            {% for histroy_item in histroy_items %}
+                <tr>
+                    <th scope="row">{{ histroy_item.auction_id }}</th>
+                    <td>{{ histroy_item.auction.product.product_name }}</td>
+                    <td>{{ histroy_item.amount }}</td>
+                    <td>{{ histroy_item.created }}</td>
+                </tr>
+            {% endfor %}
+
+            </tbody>
+        </table>
+    </div>
+
+
+
+{% endblock %}

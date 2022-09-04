@@ -15,7 +15,7 @@
 <p>Maximum bid : {{item.maximum_bid}}</p>
 {% endif %}
 
-<form action="" method="POST">
+<form action="{% url 'place_bid' item.id %}" method="POST">
     {% csrf_token %}
     {{last_price}} + <input type="number" name="add_amount" id="">
     <input type="submit" value="Place bid">

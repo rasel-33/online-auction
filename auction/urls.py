@@ -13,5 +13,6 @@ urlpatterns = [
     path('delete_product/<str:pk>/',views.delete_product,name="delete_product"),
     path('no_permission',views.no_permission,name="no_permission"),
     path('my_prouducts',views.my_products,name="my_products"),
-    path('place_bid/<str:pk>/',views.PlaceBidForm,name="place_bid"),
+    path('place_bid/<str:pk>/',views.place_bid,name="place_bid"),
+    path('auction_history/<int:pk>', views.auction_history, name="auction_history"),
 ]

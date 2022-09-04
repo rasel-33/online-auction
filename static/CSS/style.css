@@ -8,3 +8,74 @@
     height: 30px;
     width: 20px;
 }
+/*body {*/
+/*  background: #BA68C8;*/
+/*}*/
+
+.form-control:focus {
+  box-shadow: none;
+  border-color: #BA68C8;
+}
+
+.profile-button {
+  background: #BA68C8;
+  box-shadow: none;
+  border: none;
+}
+
+.profile-button:hover {
+  background: #682773;
+}
+
+.profile-button:focus {
+  background: #682773;
+  box-shadow: none;
+}
+
+.profile-button:active {
+  background: #682773;
+  box-shadow: none;
+}
+
+.back:hover {
+  color: #682773;
+  cursor: pointer;
+}
+
+.height-100{
+    height:100vh;
+}
+
+.card{
+    width:380px;
+    border:none;
+}
+
+.dots {
+    height: 20px;
+    width: 20px;
+    margin-top:4px;
+    margin-left:4px;
+    background-color:#dc3545;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#fff;
+    font-size:10px;
+}
+
+.list li{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:13px;
+    border-top:1px solid #eee;
+    cursor:pointer;
+}
+
+.list li:hover{
+    background-color:#dc3545;
+    color:#fff;
+}
