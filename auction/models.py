@@ -49,4 +49,4 @@ class BidTransaction(BaseModel):
     bidder = models.ForeignKey("auth.User", on_delete=models.SET_NULL, null=True)
     auction = models.ForeignKey("auction.Auction", on_delete=models.CASCADE)
     amount = models.PositiveIntegerField()
-    has_won = models.BooleanField()
+    has_won = models.BooleanField(default=False)
