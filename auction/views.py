@@ -64,11 +64,15 @@ def live_auction_products(request):
 
 
 def single_auction_product(request, pk):
+    winner = None
     item = Auction.objects.get(id=pk)
+    if BidTransaction.objects.filter(auction_id=pk).exists():
+        won = BidTransaction.objects.filter(auction_id=pk).order_by("-amount").first()
+        winner = won.bidder.username
     last_price = item.min_bid_price
     if not item.maximum_bid == None:
         last_price = item.maximum_bid
-    context = {'item': item, 'last_price': last_price}
+    context = {'item': item, 'last_price': last_price, 'winner': winner}
     return render(request, 'auction/auction_single_product.html', context)
 
 
