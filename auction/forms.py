@@ -32,4 +32,7 @@ class UpdateProductForm(forms.ModelForm):
 class PlaceBidForm(forms.Form):
     add_amount = forms.IntegerField()
 
+class FeedbackForm(forms.Form):
+    feedback_message = forms.CharField(max_length=1000, required=True)
+
 

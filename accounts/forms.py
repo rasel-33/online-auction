@@ -53,6 +53,9 @@ class SignInForm(forms.ModelForm):
             'password':forms.PasswordInput(),
         }
 
+class RequestCreditForm(forms.Form):
+    amount = forms.IntegerField(required=True)
+
 class ResetPasswordRequestForm(forms.Form):
     email = forms.EmailField()
 

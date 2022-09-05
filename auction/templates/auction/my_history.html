@@ -10,16 +10,19 @@
                 <th scope="col">Product</th>
                 <th scope="col">Bid Amount</th>
                 <th scope="col">Bid Time</th>
+                <th scope="col">Status</th>
             </tr>
             </thead>
 
             <tbody>
-            {% for histroy_item in histroy_items %}
+            {% for history_item in history_items %}
                 <tr>
-                    <th scope="row">{{ histroy_item.auction_id }}</th>
-                    <td>{{ histroy_item.auction.product.product_name }}</td>
-                    <td>{{ histroy_item.amount }}</td>
-                    <td>{{ histroy_item.created }}</td>
+                    <th scope="row">{{ history_item.auction_id }}</th>
+                    <td>{{ history_item.auction.product.product_name }}</td>
+                    <td>{{ history_item.amount }}</td>
+                    <td>{{ history_item.created }}</td>
+
+
                 </tr>
             {% endfor %}
 

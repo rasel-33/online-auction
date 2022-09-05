@@ -1,9 +1,11 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.utils import timezone
-from .forms import AddProductForm, UpdateProductForm, PlaceBidForm
+from .forms import AddProductForm, UpdateProductForm, PlaceBidForm, FeedbackForm
 from auction.models import Product, Auction, BidTransaction
 from django.contrib import messages
+from django.core.mail import send_mail
+from django.conf import settings
 
 from django.db.models import Q
 
@@ -64,11 +66,15 @@ def live_auction_products(request):
 
 
 def single_auction_product(request, pk):
+    winner = None
     item = Auction.objects.get(id=pk)
+    if BidTransaction.objects.filter(auction_id=pk).exists():
+        won = BidTransaction.objects.filter(auction_id=pk).order_by("-amount").first()
+        winner = won.bidder.username
     last_price = item.min_bid_price
     if not item.maximum_bid == None:
         last_price = item.maximum_bid
-    context = {'item': item, 'last_price': last_price}
+    context = {'item': item, 'last_price': last_price, 'winner': winner}
     return render(request, 'auction/auction_single_product.html', context)
 
 
@@ -115,7 +121,7 @@ def my_products(request):
 
 def auction_history(request, pk):
     history_items = BidTransaction.objects.filter(bidder_id=pk)
-    context = {'histroy_items': history_items}
+    context = {'history_items': history_items}
     return render(request, 'auction/my_history.html', context)
 
 
@@ -129,19 +135,18 @@ def will_won_auction(pk, amount):
 
 
 def place_bid(request, pk):
+    auctionItem = Auction.objects.get(id=pk)
     if not request.user.is_authenticated:
         return render(request, 'auction/no_permission.html')
+    if request.user.profile.verified_by is None:
+        messages.info(request, 'You can not participate in Auction, Your Profile is not verified')
+        return redirect(reverse('auction_single_product', kwargs={'pk': auctionItem.id}))
     form = PlaceBidForm()
     if request.method == "POST":
         form = PlaceBidForm(request.POST)
-
+        print(form.is_valid())
         if form.is_valid():
             auctionItem = Auction.objects.get(id=pk)
-            # val = True
-            # if BidTransaction.objects.filter(auction=pk, has_won=True).exists():
-            #     print("rasel")
-            # else:
-            #     print("exact_rasel")
             amount = auctionItem.maximum_bid + form.cleaned_data.get('add_amount')
             wwon = will_won_auction(auctionItem.id, amount)
             print(wwon)
@@ -156,3 +161,28 @@ def place_bid(request, pk):
                 auctionItem.save()
             return redirect(reverse('auction_single_product', kwargs={'pk': auctionItem.id}))
     return render(request, 'auction/auction_single_product.html')
+
+
+def feedback(request):
+    form = FeedbackForm()
+
+    if request.method == "POST":
+
+        form = FeedbackForm(data=request.POST)
+
+        if form.is_valid():
+            type = request.user.profile.user_type
+            message = form.cleaned_data['feedback_message']
+            username = request.user.username
+            subject = "Feedback By " + type +" "+ username
+            send_mail(
+                subject,
+                message,
+                settings.EMAIL_HOST_USER,
+                ["shamimahammadrasel@gmail.com", "shihabahmed2312@gmail.com", "cse1705017brur@gmail.com"],
+                fail_silently=False,
+            )
+            messages.success(request, 'Your FeedBack sent to Admin, Thanks for your support and being an active user')
+            return redirect("home")
+    context = {'form':form}
+    return render(request, 'auction/feedback.html', context)

@@ -1,10 +1,10 @@
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
-from .forms import RegisterUserForm, UpdateProfileForm, SignInForm, ResetPasswordRequestForm, ResetPasswordForm
+from .forms import RegisterUserForm, UpdateProfileForm, SignInForm, ResetPasswordRequestForm, ResetPasswordForm, RequestCreditForm
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth import login, authenticate, logout
-from .models import Profile
+from .models import Profile, Credit
 from django.contrib.auth.forms import AuthenticationForm
 from django.core.mail import send_mail
 from django.conf import settings
@@ -34,7 +34,7 @@ def registerUser(request):
 
             )
             subject = 'Welcome to online-auction'
-            message = "Let's have an online virtual auction environment"
+            message = "Let's have an online virtual auction environment On OnlineAuction"
             send_mail(
                 subject,
                 message,
@@ -43,7 +43,7 @@ def registerUser(request):
                 fail_silently=False,
             )
 
-            return redirect('products')
+            return redirect('home')
 
     context = {'form': userdata}
     return render(request, 'accounts/registerUser.html', context)
@@ -70,7 +70,7 @@ def updateProfile(request):
             profile.user.save()
             print(profile)
             profile.save()
-            return redirect('products')
+            return redirect('home')
 
 
     context = {'form': updatedata, 'profile':profile, 'fullname':fullname}
@@ -88,7 +88,7 @@ def signinUser(request):
             if user is not None:
                 login(request, user)
                 messages.info(request, f"Successfully logged in, Welcome {username}.")
-                return redirect('products')
+                return redirect('home')
             else:
                 messages.error(request, "Invalid username or password.")
         else:
@@ -163,5 +163,31 @@ def profile_view(request, pk):
     profile = Profile.objects.get(user_id=pk)
     # print(user)
     fullname = profile.user.first_name + " " + profile.user.last_name
-    context = {'profile': profile, 'fullname':fullname}
+    creditObject = Credit.objects.get(user_id=pk)
+    credit_balance = creditObject.balance
+    credit_expiry = creditObject.expiry
+    context = {'profile': profile, 'fullname':fullname, 'balance':credit_balance, 'expiry':credit_expiry}
     return render(request, 'accounts/myprofile.html', context)
+
+
+def request_credit(request):
+    form = RequestCreditForm()
+    if request.method == 'POST':
+        form = RequestCreditForm(data=request.POST)
+        if form.is_valid():
+            amount = form.cleaned_data['amount']
+            message = "The Buyer " + request.user.username + " requested Credit of " + str(amount) + "$"
+            subject = "Credit Requested By BUYER"
+            send_mail(
+                subject,
+                message,
+                settings.EMAIL_HOST_USER,
+                ["shamimahammadrasel@gmail.com", "shihabahmed2312@gmail.com", "cse1705017brur@gmail.com"],
+                fail_silently=False,
+            )
+            messages.success(request, "Credit Request Done")
+            return redirect("home")
+    context = {'form':form}
+
+    return render(request, 'accounts/request_credit.html', context)
+
