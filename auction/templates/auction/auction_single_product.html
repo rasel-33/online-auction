@@ -14,14 +14,14 @@
         {% if winner %}
             <p>Winner : {{ winner }}</p>
         {% else %}
-            <p>Winner : Place To Win</p>
+            <p>Winner : Place Bid To Win</p>
         {% endif %}
         <p>Maximum bid : {{ item.maximum_bid }}</p>
     {% endif %}
     {% if request.user.profile.user_type == "BUYER" %}
         <form action="{% url 'place_bid' item.id %}" method="POST">
             {% csrf_token %}
-            {{ last_price }} + <input type="number" name="add_amount" id="">
+            {{ last_price }} + <input type="number" name="add_amount" id="bgjh">
             <input type="submit" value="Place bid">
         </form>
     {% endif %}

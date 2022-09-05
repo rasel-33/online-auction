@@ -14,7 +14,7 @@ class BaseModel(models.Model):
 
 
 class VarifiedByAbstractModel(models.Model):
-    varified_by = models.ForeignKey("auth.User",on_delete=models.SET_NULL,null=True,blank=True,related_name="+")
+    verified_by = models.ForeignKey("auth.User",on_delete=models.SET_NULL,null=True,blank=True,related_name="+")
 
     class Meta:
         abstract = True
