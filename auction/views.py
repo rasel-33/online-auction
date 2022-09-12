@@ -39,6 +39,13 @@ def addproduct(request):
             instance.user_id = request.user.id
             instance.save()
             messages.success(request, 'Your Product added successfully')
+            Auction.objects.create(
+                product_id=instance.id,
+                min_bid_price=instance.proposed_minimum_price,
+                bid_start=instance.bid_start,
+                bid_expiry=instance.bid_expiry
+
+            )
             return redirect('home')
         else:
             messages.info(request, 'Your Bid Start Time and Expiry Time is contradictory')
