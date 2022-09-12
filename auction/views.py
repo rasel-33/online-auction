@@ -15,7 +15,8 @@ from django.db.models import Q
 
 def home(request):
     itemlist = Product.objects.exclude(is_online=True).exclude(is_rejected=True)
-    context = {'items':itemlist}
+    itemlist = Auction.objects.filter(bid_expiry__gte=timezone.now())
+    context = {'items': itemlist}
     return render(request, 'auction/home.html', context)
 
 
@@ -175,7 +176,7 @@ def feedback(request):
             type = request.user.profile.user_type
             message = form.cleaned_data['feedback_message']
             username = request.user.username
-            subject = "Feedback By " + type +" "+ username
+            subject = "Feedback By " + type + " " + username
             send_mail(
                 subject,
                 message,
@@ -185,5 +186,11 @@ def feedback(request):
             )
             messages.success(request, 'Your FeedBack sent to Admin, Thanks for your support and being an active user')
             return redirect("home")
-    context = {'form':form}
+    context = {'form': form}
     return render(request, 'auction/feedback.html', context)
+
+
+def upcoming_products(request):
+    itemlist = Product.objects.exclude(is_online=True).exclude(is_rejected=True)
+    context = {'items': itemlist}
+    return render(request, 'auction/upcoming_products.html', context)
