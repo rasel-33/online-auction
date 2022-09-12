@@ -37,6 +37,7 @@ def addproduct(request):
             instance = form.save()
             instance.user_id = request.user.id
             instance.save()
+            messages.success(request, 'Your Product added successfully')
             return redirect('home')
         else:
             messages.info(request, 'Your Bid Start Time and Expiry Time is contradictory')

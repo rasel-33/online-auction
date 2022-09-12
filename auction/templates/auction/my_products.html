@@ -1,28 +1,79 @@
 {% extends 'main.html' %}
 
 {% block content %}
-<h1>Live Products</h1>
-{% for item in items %}
-    <h4>{{item.product.product_name}}</h4>
-    <p>{{item.product.product_description}}</p>
+    <h1 style="text-align: center">Auction Products</h1>
+    <div style="margin:30px">
+        <table class="table">
+            <thead>
+            <tr class="table-active">
+                <th>Name</th>
+                <th>Category</th>
+                <th>Base Price</th>
+                <th>Image</th>
+                <th>Start Time</th>
+                <th>Expiry Time</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for item in items %}
+                <tr class="table-success">
+                    <td><a href="{% url 'auction_single_product' item.id %}"
+                           style="text-decoration: none">{{ item.product.product_name }}</a></td>
+                    <td>{{ item.product.category }}</td>
+                    <td>{{ item.min_bid_price }}</td>
+                    <td><img src="{{ item.product.product_image.url }}" style="width: 30px; height: 30px;"></td>
+                    <td>{{ item.bid_start }}</td>
+                    <td>{{ item.bid_expiry }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div><hr>
 
-{% endfor %}
-<hr>
+    <h1 style="text-align: center">Pending Products</h1>
+    <div style="margin:30px">
+        <table class="table">
+            <thead>
+            <tr class="table-active">
+                <th>Name</th>
+                <th>Category</th>
+                <th>Base Price</th>
+                <th>Image</th>
+                <th>Expected Start</th>
+                <th>Expected Expiry</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for item in pendingitems %}
+                <tr class="table-primary">
+                    <td><a href="{% url 'product' item.id %}"
+                           style="text-decoration: none">{{ item.product_name }}</a></td>
+                    <td>{{ itemcategory }}</td>
+                    <td>{{ item.min_bid_price }}</td>
+                    <td><img src="{{ item.product.product_image.url }}" style="width: 30px; height: 30px;"></td>
+                    <td>{{ item.bid_start }}</td>
+                    <td>{{ item.bid_expiry }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div><hr>
 
-<h1>Pending Products</h1>
-{% for item in pendingitems %}
-    <h4>{{item.product_name}}</h4>
-    <p>{{item.product_description}}</p>
 
-{% endfor %}
-
-<hr>
-
-<h1>Rejected Products</h1>
-{% for item in rejecteditems %}
-    <h4>{{item.product_name}}</h4>
-    <p>{{item.product_description}}</p>
-
-{% endfor %}
+    {#    <h1>Pending Products</h1>#}
+    {#    {% for item in pendingitems %}#}
+    {#        <h4>{{ item.product_name }}</h4>#}
+    {#        <p>{{ item.product_description }}</p>#}
+    {##}
+    {#    {% endfor %}#}
+    {##}
+    {#    <hr>#}
+    {##}
+    {#    <h1>Rejected Products</h1>#}
+    {#    {% for item in rejecteditems %}#}
+    {#        <h4>{{ item.product_name }}</h4>#}
+    {#        <p>{{ item.product_description }}</p>#}
+    {##}
+    {#    {% endfor %}#}
 
 {% endblock %}

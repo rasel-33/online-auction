@@ -1,6 +1,9 @@
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
-from .forms import RegisterUserForm, UpdateProfileForm, SignInForm, ResetPasswordRequestForm, ResetPasswordForm, RequestCreditForm
+from django.urls import reverse
+
+from .forms import RegisterUserForm, UpdateProfileForm, SignInForm, ResetPasswordRequestForm, ResetPasswordForm, \
+    RequestCreditForm, RequestWithdraw
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth import login, authenticate, logout
@@ -9,6 +12,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.core.mail import send_mail
 from django.conf import settings
 from django.contrib.auth.tokens import default_token_generator
+from django.utils import timezone
 
 
 # Create your views here.
@@ -32,6 +36,11 @@ def registerUser(request):
                 phone=userdata.cleaned_data.get('phone'),
                 location=userdata.cleaned_data.get('location')
 
+            )
+            Credit.objects.create(
+                user_id=user.id,
+                balance=0,
+                expiry=timezone.now()
             )
             subject = 'Welcome to online-auction'
             message = "Let's have an online virtual auction environment On OnlineAuction"
@@ -72,8 +81,7 @@ def updateProfile(request):
             profile.save()
             return redirect('home')
 
-
-    context = {'form': updatedata, 'profile':profile, 'fullname':fullname}
+    context = {'form': updatedata, 'profile': profile, 'fullname': fullname}
     return render(request, 'accounts/updateProfile.html', context)
 
 
@@ -166,7 +174,7 @@ def profile_view(request, pk):
     creditObject = Credit.objects.get(user_id=pk)
     credit_balance = creditObject.balance
     credit_expiry = creditObject.expiry
-    context = {'profile': profile, 'fullname':fullname, 'balance':credit_balance, 'expiry':credit_expiry}
+    context = {'profile': profile, 'fullname': fullname, 'balance': credit_balance, 'expiry': credit_expiry}
     return render(request, 'accounts/myprofile.html', context)
 
 
@@ -187,7 +195,37 @@ def request_credit(request):
             )
             messages.success(request, "Credit Request Done")
             return redirect("home")
-    context = {'form':form}
+    context = {'form': form}
 
     return render(request, 'accounts/request_credit.html', context)
 
+
+def request_credit_withdraw(request):
+    form = RequestWithdraw()
+
+    if request.method == 'POST':
+        form = RequestWithdraw(data=request.POST)
+        if form.is_valid():
+            user_credit = Credit.objects.get(user=request.user.id)
+            balance = user_credit.balance
+            request_amount = form.cleaned_data['amount']
+            if balance < request_amount:
+                messages.info(request, "Insufficient Balance, Your Balance is " + str(
+                    balance) + "$, but You requested for " + str(request_amount) + "$")
+
+                return redirect(reverse('request_withdraw'))
+
+            message = "The seller " + request.user.username + " is requesting withdrawal of " + str(
+                request_amount) + "$"
+            subject = "Withdraw requested by SELLER"
+            send_mail(
+                subject,
+                message,
+                settings.EMAIL_HOST_USER,
+                ["shamimahammadrasel@gmail.com", "shihabahmed2312@gmail.com", "cse1705017brur@gmail.com"],
+                fail_silently=False,
+            )
+            messages.success(request, "Withdraw request will be varified, further process will be done by the admin")
+            return redirect("home")
+    context = {'form': form}
+    return render(request, 'accounts/request_withdraw.html', context)

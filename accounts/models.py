@@ -32,6 +32,9 @@ class Credit(BaseModel):
     balance = models.PositiveIntegerField(default=0)
     expiry = models.DateTimeField()
 
+    def __str__(self):
+        return self.user.username
+
 
 class CreditTransaction(BaseModel):
     credit = models.ForeignKey("accounts.Credit",on_delete=models.SET_NULL,null=True)
