@@ -81,7 +81,7 @@ def single_auction_product(request, pk):
         won = BidTransaction.objects.filter(auction_id=pk).order_by("-amount").first()
         winner = won.bidder.username
     last_price = item.min_bid_price
-    if not item.maximum_bid == None:
+    if not item.maximum_bid is None:
         last_price = item.maximum_bid
     context = {'item': item, 'last_price': last_price, 'winner': winner}
     return render(request, 'auction/auction_single_product.html', context)
@@ -156,6 +156,9 @@ def place_bid(request, pk):
         print(form.is_valid())
         if form.is_valid():
             auctionItem = Auction.objects.get(id=pk)
+            if auctionItem.bid_expiry < timezone.now():
+                messages.info(request, "Time is over You can not place a bid")
+                return redirect(reverse('auction_single_product', kwargs={'pk': auctionItem.id}))
             amount = auctionItem.maximum_bid + form.cleaned_data.get('add_amount')
             wwon = will_won_auction(auctionItem.id, amount)
             print(wwon)
