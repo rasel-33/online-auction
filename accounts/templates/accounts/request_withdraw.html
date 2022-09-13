@@ -1,0 +1,11 @@
+{% extends 'main.html' %}
+
+{% block content %}
+
+    <form method="POST" style="text-align: center">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Withdraw" class="btn btn-danger">
+    </form>
+
+{% endblock %}

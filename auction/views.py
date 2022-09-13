@@ -15,7 +15,8 @@ from django.db.models import Q
 
 def home(request):
     itemlist = Product.objects.exclude(is_online=True).exclude(is_rejected=True)
-    context = {'items':itemlist}
+    itemlist = Auction.objects.filter(bid_expiry__gte=timezone.now())
+    context = {'items': itemlist}
     return render(request, 'auction/home.html', context)
 
 
@@ -37,6 +38,14 @@ def addproduct(request):
             instance = form.save()
             instance.user_id = request.user.id
             instance.save()
+            messages.success(request, 'Your Product added successfully')
+            Auction.objects.create(
+                product_id=instance.id,
+                min_bid_price=instance.proposed_minimum_price,
+                bid_start=instance.bid_start,
+                bid_expiry=instance.bid_expiry
+
+            )
             return redirect('home')
         else:
             messages.info(request, 'Your Bid Start Time and Expiry Time is contradictory')
@@ -72,7 +81,7 @@ def single_auction_product(request, pk):
         won = BidTransaction.objects.filter(auction_id=pk).order_by("-amount").first()
         winner = won.bidder.username
     last_price = item.min_bid_price
-    if not item.maximum_bid == None:
+    if not item.maximum_bid is None:
         last_price = item.maximum_bid
     context = {'item': item, 'last_price': last_price, 'winner': winner}
     return render(request, 'auction/auction_single_product.html', context)
@@ -147,6 +156,9 @@ def place_bid(request, pk):
         print(form.is_valid())
         if form.is_valid():
             auctionItem = Auction.objects.get(id=pk)
+            if auctionItem.bid_expiry < timezone.now():
+                messages.info(request, "Time is over You can not place a bid")
+                return redirect(reverse('auction_single_product', kwargs={'pk': auctionItem.id}))
             amount = auctionItem.maximum_bid + form.cleaned_data.get('add_amount')
             wwon = will_won_auction(auctionItem.id, amount)
             print(wwon)
@@ -174,7 +186,7 @@ def feedback(request):
             type = request.user.profile.user_type
             message = form.cleaned_data['feedback_message']
             username = request.user.username
-            subject = "Feedback By " + type +" "+ username
+            subject = "Feedback By " + type + " " + username
             send_mail(
                 subject,
                 message,
@@ -184,5 +196,11 @@ def feedback(request):
             )
             messages.success(request, 'Your FeedBack sent to Admin, Thanks for your support and being an active user')
             return redirect("home")
-    context = {'form':form}
+    context = {'form': form}
     return render(request, 'auction/feedback.html', context)
+
+
+def upcoming_products(request):
+    itemlist = Product.objects.exclude(is_online=True).exclude(is_rejected=True)
+    context = {'items': itemlist}
+    return render(request, 'auction/upcoming_products.html', context)

@@ -33,12 +33,13 @@ class Category(BaseModel):
 
 class Auction(BaseModel):
     created_by = models.ForeignKey("auth.User", on_delete=models.CASCADE)
+    # TODO: update created by when admin activate this auction
     product = models.OneToOneField("auction.Product", on_delete=models.CASCADE)
     min_bid_price = models.PositiveIntegerField()
     bid_start = models.DateTimeField()
     bid_expiry = models.DateTimeField()
     maximum_bid = models.PositiveIntegerField(null=True)
-    min_required_credit = models.PositiveIntegerField()
+    min_required_credit = models.PositiveIntegerField(null=True)
     ended = models.BooleanField(default=False)
 
     def __str__(self):
@@ -50,3 +51,4 @@ class BidTransaction(BaseModel):
     auction = models.ForeignKey("auction.Auction", on_delete=models.CASCADE)
     amount = models.PositiveIntegerField()
     has_won = models.BooleanField(default=False)
+

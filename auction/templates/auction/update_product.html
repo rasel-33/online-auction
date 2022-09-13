@@ -1,14 +1,16 @@
 {% extends 'main.html' %}
+{% load crispy_forms_filters %}
 
 {% block content %}
 
-<form method="POST" enctype="multipart/form-data">
+<form method="POST" enctype="multipart/form-data" class="container">
+    <h1 style="text-align: center">Update Product Form</h1>
 
     {% csrf_token %}
 
-    {{ form.as_p }}
+    {{ form | crispy }}
     
-    <input type="submit" value="Update">
+    <input type="submit" value="update">
 
 </form>
 

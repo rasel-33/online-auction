@@ -2,31 +2,43 @@
 
 {% block content %}
 
-    <h2>{{ item.product.product_name }} </h2>
 
-    <img src="{{ item.product.product_image.url }}" style="height:400px;">
+    <div class="container card text-center" style="width:60%">
+        <div class="card-header">
+            Owner: <a href="{% url 'profile' item.product.user.id %}"
+                      style="text-decoration: none">{{ item.product.user.username }} </a>
+        </div>
+        <div class="card-body">
+            <h3 class="card-title">{{ item.product.product_name }}</h3>
+            <p>Category : {{ item.product.category }}</p>
 
+            <img src="{{ item.product.product_image.url }}" style="width: 80%">
+            <p class="card-text">{{ item.product.product_description }}</p>
+            {% if item.maximum_bid == None %}
+                <p>Base Price : {{ item.min_bid_price }}</p>
+                <p>Still no one has placed bid</p>
+            {% else %}
+                {% if winner %}
+                    <p class="btn btn-danger">Top Bid : {{ item.maximum_bid }}</p>
+                {% else %}
+                    <p>Top Bidder : Place Bid To Win</p>
+                {% endif %}
+                <p class="btn btn-success">Top Bidder : {{ winner }}</p>
+            {% endif %}
 
-    {% if item.maximum_bid == None %}
-        <p>Base Price : {{ item.min_bid_price }}</p>
-        <p>Still no one has placed bid</p>
-    {% else %}
-        {% if winner %}
-            <p>Winner : {{ winner }}</p>
-        {% else %}
-            <p>Winner : Place Bid To Win</p>
+        </div>
+        {% if request.user.profile.user_type == "BUYER" %}
+            <form action="{% url 'place_bid' item.id %}" method="POST" style="margin:10px">
+                {% csrf_token %}
+                {{ last_price }} + <input type="number" name="add_amount" id="bgjh" value="0">
+                <input type="submit" value="Place bid">
+            </form>
         {% endif %}
-        <p>Maximum bid : {{ item.maximum_bid }}</p>
-    {% endif %}
-    {% if request.user.profile.user_type == "BUYER" %}
-        <form action="{% url 'place_bid' item.id %}" method="POST">
-            {% csrf_token %}
-            {{ last_price }} + <input type="number" name="add_amount" id="bgjh">
-            <input type="submit" value="Place bid">
-        </form>
-    {% endif %}
 
-    <p id="demo-{{ item.id }}"></p>
+        <div class="card-footer text-muted" id="demo-{{ item.id }}">
+
+        </div>
+    </div>
 
     <script type="text/javascript">
         var selected_year_{{item.id}} = {{ item.bid_expiry|date:"Y" }};

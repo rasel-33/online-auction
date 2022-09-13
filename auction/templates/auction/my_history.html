@@ -10,7 +10,8 @@
                 <th scope="col">Product</th>
                 <th scope="col">Bid Amount</th>
                 <th scope="col">Bid Time</th>
-                <th scope="col">Status</th>
+
+
             </tr>
             </thead>
 
@@ -18,7 +19,7 @@
             {% for history_item in history_items %}
                 <tr>
                     <th scope="row">{{ history_item.auction_id }}</th>
-                    <td>{{ history_item.auction.product.product_name }}</td>
+                    <td><a href="{% url 'auction_single_product' history_item.auction_id %}">{{ history_item.auction.product.product_name }}<a/></td>
                     <td>{{ history_item.amount }}</td>
                     <td>{{ history_item.created }}</td>
 

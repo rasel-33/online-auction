@@ -15,5 +15,6 @@ urlpatterns = [
     path('my_prouducts',views.my_products,name="my_products"),
     path('place_bid/<str:pk>/',views.place_bid,name="place_bid"),
     path('auction_history/<int:pk>', views.auction_history, name="auction_history"),
-    path('feedback/', views.feedback, name="feedback")
+    path('feedback/', views.feedback, name="feedback"),
+    path('upcoming_products/',views.upcoming_products, name="upcoming_products")
 ]
