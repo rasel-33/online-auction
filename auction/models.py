@@ -32,7 +32,7 @@ class Category(BaseModel):
 
 
 class Auction(BaseModel):
-    created_by = models.ForeignKey("auth.User", on_delete=models.CASCADE)
+    created_by = models.ForeignKey("auth.User", on_delete=models.CASCADE, null=True)
     # TODO: update created by when admin activate this auction
     product = models.OneToOneField("auction.Product", on_delete=models.CASCADE)
     min_bid_price = models.PositiveIntegerField()
