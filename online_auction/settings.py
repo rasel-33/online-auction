@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 from pathlib import Path
 import os
 
+import dj_database_url
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -21,12 +23,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-_u+m5gk^jb4=55&qt@8l*ghqe6#y(la6du_xsz3+0-^0e52ivv'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'secret')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', '1') == '1'
+ON_SEVER = os.environ.get('ON_SERVER', '0') == '1'
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '*').split(';')
 
 
 # Application definition
@@ -46,6 +49,38 @@ INSTALLED_APPS = [
     'accounts',
     'core',
 ]
+
+if ON_SEVER:
+    LOGGING = {
+        'version': 1,
+        'disable_existing_loggers': False,
+        'formatters': {
+            'verbose': {
+                'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+                'style': '{',
+            },
+        },
+        'handlers': {
+            'file': {
+                'level': 'ERROR',
+                'class': 'logging.FileHandler',
+                'filename': os.path.join(BASE_DIR, 'logs/error.log'),
+            },
+            'file-fmt': {
+                'level': 'ERROR',
+                'class': 'logging.FileHandler',
+                'filename': os.path.join(BASE_DIR, 'logs/error-fmt.log'),
+                'formatter': 'verbose'
+            },
+        },
+        'loggers': {
+            'django': {
+                'handlers': ['file', 'file-fmt'],
+                'level': 'ERROR',
+                'propagate': True,
+            },
+        },
+    }
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -90,6 +125,9 @@ DATABASES = {
     }
 }
 
+if ON_SEVER:
+    DATABASES['default'] = dj_database_url.config()
+
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
@@ -122,7 +160,7 @@ USE_I18N = True
 USE_TZ = True
 
 
-#Settings for sending emails to an user
+# Settings for sending emails to an user
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
@@ -130,8 +168,6 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'shihabahmed2312@gmail.com'
 EMAIL_HOST_PASSWORD = 'xxnejrsrskkdtlag'
- 
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
@@ -154,3 +190,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 
 CRISPY_TEMPLATE_PACK = "bootstrap5"
+
+if ON_SEVER:
+    CSRF_TRUSTED_ORIGINS = ['https://ems.thebrainslab.net', 'https://ems.jmdigitalmarketingservices.com']
