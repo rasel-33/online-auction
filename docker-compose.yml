@@ -1,0 +1,28 @@
+version: "3.9"
+
+services:
+
+  db:
+    image: postgres
+    volumes:
+      - rasel_auction_postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=djangoDB
+      - POSTGRES_USER=djangoUSER
+      - POSTGRES_PASSWORD=djangoPASS
+
+  web:
+    build: .
+    command: gunicorn --bind 0.0.0.0:8889 online_auction.wsgi
+    image: "ems"
+    volumes:
+      - .:/code
+    ports:
+      - "8889:8889"
+    env_file:
+      - .env
+    depends_on:
+      - db
+
+volumes:
+  rasel_auction_postgres_data:

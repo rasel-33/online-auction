@@ -1,0 +1,14 @@
+{% extends 'main.html' %}
+
+{% block content %}
+
+    <form method="POST">
+        {% csrf_token %}
+        <h2 class="text-center">Are you sure you want to delete "{{ item.product_name }}"?</h2>
+        <div class="text-center">
+            <a href="{% url 'single-product' item.id %}" class="btn btn-primary"> Cancel </a>
+            <input type="submit" value="Delete" class="btn btn-danger">
+        </div>
+
+    </form>
+{% endblock %}

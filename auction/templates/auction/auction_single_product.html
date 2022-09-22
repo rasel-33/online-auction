@@ -1,0 +1,90 @@
+{% extends 'main.html' %}
+
+{% block content %}
+
+
+    <div class="container card text-center" style="width:60%">
+        <div class="card-header">
+            Owner: <a href="{% url 'profile' item.product.user.id %}"
+                      style="text-decoration: none">{{ item.product.user.username }} </a>
+        </div>
+        <div class="card-body">
+            <h3 class="card-title">{{ item.product.product_name }}</h3>
+            <p>Category : {{ item.product.category }}</p>
+
+            <img src="{{ item.product.product_image.url }}" style="width: 80%">
+            <p class="card-text">{{ item.product.product_description }}</p>
+            {% if item.maximum_bid == None %}
+                <p>Base Price : {{ item.min_bid_price }}</p>
+                <p>Still no one has placed bid</p>
+            {% else %}
+                {% if winner %}
+                    <p class="btn btn-danger">Top Bid : {{ item.maximum_bid }}</p>
+                {% else %}
+                    <p>Top Bidder : Place Bid To Win</p>
+                {% endif %}
+                <p class="btn btn-success">Top Bidder : {{ winner }}</p>
+            {% endif %}
+
+        </div>
+        {% if request.user.profile.user_type == "BUYER" %}
+            <form action="{% url 'place_bid' item.id %}" method="POST" style="margin:10px">
+                {% csrf_token %}
+                {{ last_price }} + <input type="number" name="add_amount" id="bgjh" value="0">
+                <input type="submit" value="Place bid">
+            </form>
+        {% endif %}
+
+        <div class="card-footer text-muted" id="demo-{{ item.id }}">
+
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        var selected_year_{{item.id}} = {{ item.bid_expiry|date:"Y" }};
+        var selected_month_{{item.id}} = {{ item.bid_expiry|date:"m" }} -1;
+        var selected_day_{{item.id}} = {{ item.bid_expiry|date:"d"}};
+        var selected_hour_{{item.id}} = {{ item.bid_expiry|time:"h"}};
+        var selected_min_{{item.id}} = {{ item.bid_expiry|time:"i"}};
+        var selected_sec_{{item.id}} = {{ item.bid_expiry|time:"s"}};
+        var selected_date_{{item.id}} = new Date(
+            selected_year_{{item.id}},
+            selected_month_{{item.id}},
+            selected_day_{{item.id}},
+            selected_hour_{{item.id}},
+            selected_min_{{item.id}},
+            selected_sec_{{item.id}},
+        );
+        {% comment %} alert(selected_date); {% endcomment %}
+
+        // Set the date we're counting down to
+        var countDownDate_{{item.id}} = new Date(selected_date_{{item.id}}).getTime();
+
+        // Update the count down every 1 second
+        var x_{{item.id}} = setInterval(function () {
+
+            // Get today's date and time
+            var now_{{item.id}} = new Date().getTime();
+
+            // Find the distance between now and the count down date
+            var distance_{{item.id}} = countDownDate_{{item.id}} - now_{{item.id}};
+
+            // Time calculations for days, hours, minutes and seconds
+            var days_{{item.id}} = Math.floor(distance_{{item.id}} / (1000 * 60 * 60 * 24));
+            var hours_{{item.id}} = Math.floor((distance_{{item.id}} % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            var minutes_{{item.id}} = Math.floor((distance_{{item.id}} % (1000 * 60 * 60)) / (1000 * 60));
+            var seconds_{{item.id}} = Math.floor((distance_{{item.id}} % (1000 * 60)) / 1000);
+
+            // Display the result in the element with id="demo"
+            document.getElementById("demo-{{item.id}}").innerHTML = "Time Remaining : " + days_{{item.id}} + " day " + hours_{{item.id}} + "h: "
+                + minutes_{{item.id}} + "m: " + seconds_{{item.id}} + "s";
+
+            // If the count down is finished, write some text
+            if (distance_{{item.id}} < 0) {
+                clearInterval(x_{{item.id}});
+                document.getElementById("demo-{{item.id}}").innerHTML = "EXPIRED";
+            }
+
+        }, 1000);
+    </script>
+{% endblock %}
