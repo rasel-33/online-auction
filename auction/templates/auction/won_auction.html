@@ -1,0 +1,32 @@
+{% extends 'main.html' %}
+
+{% block content %}
+    <h1 style="text-align: center">Won Auction List</h1>
+    <div style="margin: 30px;">
+        <table class="table" style="border: 3px green solid">
+            <thead>
+            <tr>
+                <th scope="col">Auction</th>
+                <th scope="col">Product</th>
+                <th scope="col">Bid Amount</th>
+                <th scope="col">Bid Time</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            {% for item in items %}
+                <tr>
+                    <th scope="row">{{ item.auction_id }}</th>
+                    <td><a href="{% url 'auction_single_product' item.auction_id %}">{{ item.auction.product.product_name }}<a/></td>
+                    <td>{{ item.maximum_bid }}</td>
+                    <td>{{ item.created }}</td>
+
+
+                </tr>
+            {% endfor %}
+
+            </tbody>
+        </table>
+    </div>
+
+{% endblock %}
