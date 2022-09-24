@@ -1,5 +1,6 @@
 from django import forms
-from .models import Product
+from .models import Product, Category
+
 
 
 class AddProductForm(forms.ModelForm):
@@ -36,3 +37,5 @@ class FeedbackForm(forms.Form):
     feedback_message = forms.CharField(max_length=1000, required=True)
 
 
+# class FilterForm(forms.Form):
+#     category = Category.va

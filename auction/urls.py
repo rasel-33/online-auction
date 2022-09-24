@@ -16,5 +16,6 @@ urlpatterns = [
     path('place_bid/<str:pk>/',views.place_bid,name="place_bid"),
     path('auction_history/<int:pk>', views.auction_history, name="auction_history"),
     path('feedback/', views.feedback, name="feedback"),
-    path('upcoming_products/',views.upcoming_products, name="upcoming_products")
+    path('upcoming_products/',views.upcoming_products, name="upcoming_products"),
+    path('won_auction/', views.won_auction, name="won_auciton")
 ]

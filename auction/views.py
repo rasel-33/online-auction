@@ -43,7 +43,8 @@ def addproduct(request):
                 product_id=instance.id,
                 min_bid_price=instance.proposed_minimum_price,
                 bid_start=instance.bid_start,
-                bid_expiry=instance.bid_expiry
+                bid_expiry=instance.bid_expiry,
+                maximum_bid=instance.proposed_minimum_price,
 
             )
             return redirect('home')
@@ -76,6 +77,7 @@ def live_auction_products(request):
 
 def single_auction_product(request, pk):
     winner = None
+    bids = BidTransaction.objects.filter(auction_id=pk).order_by('-created')
     item = Auction.objects.get(id=pk)
     if BidTransaction.objects.filter(auction_id=pk).exists():
         won = BidTransaction.objects.filter(auction_id=pk).order_by("-amount").first()
@@ -83,7 +85,7 @@ def single_auction_product(request, pk):
     last_price = item.min_bid_price
     if not item.maximum_bid is None:
         last_price = item.maximum_bid
-    context = {'item': item, 'last_price': last_price, 'winner': winner}
+    context = {'item': item, 'last_price': last_price, 'winner': winner, 'bids':bids}
     return render(request, 'auction/auction_single_product.html', context)
 
 
@@ -129,7 +131,7 @@ def my_products(request):
 
 
 def auction_history(request, pk):
-    history_items = BidTransaction.objects.filter(bidder_id=pk)
+    history_items = BidTransaction.objects.filter(bidder_id=pk).order_by('-created')
     context = {'history_items': history_items}
     return render(request, 'auction/my_history.html', context)
 
@@ -204,3 +206,15 @@ def upcoming_products(request):
     itemlist = Product.objects.exclude(is_online=True).exclude(is_rejected=True)
     context = {'items': itemlist}
     return render(request, 'auction/upcoming_products.html', context)
+
+
+def won_auction(request):
+    won_auction_list = []
+    auction_ended = Auction.objects.filter(bid_expiry__lte=timezone.now())
+    for auction in auction_ended:
+        if auction.bidtransaction_set.filter(bidder = request.user.id).exists():
+            winner_bid = auction.bidtransaction_set.filter(bidder=request.user.id).order_by('-amount').first()
+            if winner_bid == auction.maximum_bid:
+                won_auction_list.append(auction)
+    context = {'items':won_auction_list}
+    return render(request, 'auction/won_auction.html', context)

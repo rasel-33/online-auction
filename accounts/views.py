@@ -43,14 +43,14 @@ def registerUser(request):
                 expiry=timezone.now()
             )
             subject = 'Welcome to online-auction'
-            message = "Let's have an online virtual auction environment On OnlineAuction"
-            send_mail(
-                subject,
-                message,
-                settings.EMAIL_HOST_USER,
-                [profile.user.email],
-                fail_silently=False,
-            )
+            message = "Let's have an online virtual auction environment On Online-Auction. Feel Safe with 100% varified users and original transaction guranteed"
+            # send_mail(
+            #     subject,
+            #     message,
+            #     settings.EMAIL_HOST_USER,
+            #     [profile.user.email],
+            #     fail_silently=False,
+            # )
 
             return redirect('home')
 
@@ -171,6 +171,7 @@ def profile_view(request, pk):
     profile = Profile.objects.get(user_id=pk)
     # print(user)
     fullname = profile.user.first_name + " " + profile.user.last_name
+
     creditObject = Credit.objects.get(user_id=pk)
     credit_balance = creditObject.balance
     credit_expiry = creditObject.expiry

@@ -1,12 +1,6 @@
 {% extends 'main.html' %}
 {% block content %}
 
-    {#    <p>{{ fullname }}</p>#}
-    {##}
-    {#    <p>User Type : {{ profile.user_type }}</p>#}
-    {##}
-    {#    <img src="{{ profile.user_image.url }}" style="height:100px; width:100px; border-radius:50%;">#}
-    {#    <a href="{% url 'update-profile' %}">Edit Profile</a>#}
     <div class="container height-100 d-flex justify-content-center align-items-center">
 
         <div class="card text-center" style="width: 600px;">
@@ -26,17 +20,18 @@
                 <div class="mt-3">
                     <p>{{ profile.user_type }} Account</p>
                     <h3>Credit Status : {{ balance }}$</h3>
+                    {% if request.user.id == profile.user_id %}
+                        {% if profile.user_type == 'BUYER' %}
 
-                    {% if profile.user_type == 'BUYER' %}
+                            <p>Expires On : {{ expiry.date }}</p>
+                            <a href="{% url 'request_credit' %}" class="btn btn-outline-danger">Request Credit</a>
 
-                        <p>Expires On : {{ expiry.date }}</p>
-                        <a href="{% url 'request_credit' %}" class="btn btn-outline-danger">Request Credit</a>
+                        {% endif %}
+                        {% if profile.user_type == 'SELLER' %}
 
-                    {% endif %}
-                    {% if profile.user_type == 'SELLER' %}
+                            <a href="{% url 'request_withdraw' %}" class="btn btn-outline-danger">Withdraw Credit</a>
 
-                        <a href="{% url 'request_withdraw' %}" class="btn btn-outline-danger">Withdraw Credit</a>
-
+                        {% endif %}
                     {% endif %}
 
                 </div>

@@ -39,7 +39,35 @@
 
         </div>
     </div>
+    {% if bids is not None %}
+    <h1 style="text-align: center; margin-top: 30px">Previous Bids</h1>
+    <div style="margin: 30px;">
+        <table class="table" style="border: 3px green solid">
+            <thead>
+            <tr>
+                <th scope="col">Bidder</th>
+                <th scope="col">Product</th>
+                <th scope="col">Bid Amount</th>
+                <th scope="col">Bid Time</th>
 
+
+            </tr>
+            </thead>
+
+            <tbody>
+            {% for item in bids %}
+                <tr>
+                    <th scope="row"><a href="{% url 'profile' item.bidder.id %}">{{ item.bidder.username }}</th>
+                    <td><a href="{% url 'auction_single_product' item.auction_id %}">{{ item.auction.product.product_name }}<a/></td>
+                    <td>{{ item.amount }}</td>
+                    <td>{{ item.created }}</td>
+                </tr>
+            {% endfor %}
+
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
     <script type="text/javascript">
         var selected_year_{{item.id}} = {{ item.bid_expiry|date:"Y" }};
         var selected_month_{{item.id}} = {{ item.bid_expiry|date:"m" }} -1;
@@ -87,4 +115,5 @@
 
         }, 1000);
     </script>
+
 {% endblock %}
