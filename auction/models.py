@@ -12,7 +12,7 @@ class Product(VarifiedByAbstractModel, BaseModel):
     product_image = models.ImageField(null=True)
     product_description = models.CharField(max_length=900)
     is_rejected = models.BooleanField(default=False)
-    is_verified = models.BooleanField(default=False)
+    # is_verified = models.BooleanField(default=False)
     is_online = models.BooleanField(default=False)
     proposed_minimum_price = models.PositiveIntegerField(default=0)
     verified_time = models.DateTimeField(auto_now_add=True, null=True)
@@ -31,7 +31,7 @@ class Category(BaseModel):
         return str(self.category_name)
 
 
-class Auction(BaseModel):
+class Auction(VarifiedByAbstractModel,BaseModel):
     # created_by = models.ForeignKey("auth.User", on_delete=models.CASCADE, null=True)
     # TODO: update created by when admin activate this auction
     product = models.OneToOneField("auction.Product", on_delete=models.CASCADE)

@@ -1,7 +1,16 @@
 from django.db import models
+
 import uuid
 
 # Create your models here.
+
+
+
+class CreatedByChoices(models.TextChoices):
+    rasel = 'rasel'
+    shihab = 'shihab'
+    sharmin = 'sharmin'
+
 
 
 class BaseModel(models.Model):
@@ -14,7 +23,7 @@ class BaseModel(models.Model):
 
 
 class VarifiedByAbstractModel(models.Model):
-    verified_by = models.ForeignKey("auth.User",on_delete=models.SET_NULL,null=True,blank=True,related_name="+")
-
+    verified_by = models.CharField(max_length=200,choices=CreatedByChoices.choices, null=True, blank=True)
+    is_varified = models.BooleanField(null=True, default=False)
     class Meta:
         abstract = True

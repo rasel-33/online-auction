@@ -175,7 +175,10 @@ def profile_view(request, pk):
     creditObject = Credit.objects.get(user_id=pk)
     credit_balance = creditObject.balance
     credit_expiry = creditObject.expiry
-    context = {'profile': profile, 'fullname': fullname, 'balance': credit_balance, 'expiry': credit_expiry}
+    expired = False
+    if credit_expiry < timezone.now():
+        expired = True
+    context = {'profile': profile, 'fullname': fullname, 'balance': credit_balance, 'expiry': credit_expiry, 'expired':expired}
     return render(request, 'accounts/myprofile.html', context)
 
 

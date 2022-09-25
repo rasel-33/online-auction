@@ -5,6 +5,7 @@ from .forms import AddProductForm, UpdateProductForm, PlaceBidForm, FeedbackForm
 from auction.models import Product, Auction, BidTransaction
 from django.contrib import messages
 from django.core.mail import send_mail
+from django.core.paginator import Paginator
 from django.conf import settings
 
 from django.db.models import Q
@@ -15,8 +16,11 @@ from django.db.models import Q
 
 def home(request):
     itemlist = Product.objects.exclude(is_online=True).exclude(is_rejected=True)
-    itemlist = Auction.objects.filter(bid_expiry__gte=timezone.now())
-    context = {'items': itemlist}
+    itemlist = Auction.objects.filter(bid_expiry__gte=timezone.now()).order_by('-created')
+    paginator = Paginator(itemlist, 5)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    context = {'page_obj': page_obj}
     return render(request, 'auction/home.html', context)
 
 
@@ -32,6 +36,9 @@ def addproduct(request):
         return redirect('no_permission')
     form = AddProductForm()
     if request.method == 'POST':
+        if not request.user.profile.is_varified:
+            messages.info(request, 'Your Account is not Verified Yet, You can add products after admin verification.')
+            return redirect('add-product')
         form = AddProductForm(request.POST, request.FILES)
         if form.is_valid() and form.cleaned_data.get('bid_start') > timezone.now() and form.cleaned_data.get(
                 'bid_expiry') > form.cleaned_data.get('bid_start'):
@@ -39,7 +46,7 @@ def addproduct(request):
             instance.user_id = request.user.id
             instance.save()
             messages.success(request, 'Your Product added successfully')
-            Auction.objects.create(
+            auctionInstance = Auction(
                 product_id=instance.id,
                 min_bid_price=instance.proposed_minimum_price,
                 bid_start=instance.bid_start,
@@ -47,6 +54,15 @@ def addproduct(request):
                 maximum_bid=instance.proposed_minimum_price,
 
             )
+            auctionInstance.save()
+            # Auction.objects.create(
+            #     product_id=instance.id,
+            #     min_bid_price=instance.proposed_minimum_price,
+            #     bid_start=instance.bid_start,
+            #     bid_expiry=instance.bid_expiry,
+            #     maximum_bid=instance.proposed_minimum_price,
+            #
+            # )
             return redirect('home')
         else:
             messages.info(request, 'Your Bid Start Time and Expiry Time is contradictory')
@@ -123,10 +139,11 @@ def no_permission(request):
 def my_products(request):
     if not request.user.profile.user_type == "SELLER":
         return render(request, 'auction/no_permission.html')
-    my_auction_items = Auction.objects.filter(product__user_id=request.user.id, bid_expiry__gte=timezone.now())
-    myitem = Product.objects.filter(user_id=request.user.id, is_online=False, is_rejected=False)
-    rejecteditems = Product.objects.filter(user_id=request.user.id, is_rejected=True)
-    context = {'items': my_auction_items, 'pendingitems': myitem, 'rejecteditems': rejecteditems}
+    my_auction_items = Auction.objects.filter(product__user_id=request.user.id, bid_expiry__gte=timezone.now(), is_varified=True).order_by('-created')
+    myitem = Product.objects.filter(user_id=request.user.id, is_online=False, is_rejected=False).order_by('-created')
+    rejecteditems = Product.objects.filter(user_id=request.user.id, is_rejected=True).order_by('-created')
+    completedAuction = Auction.objects.filter(product__user_id=request.user.id, bid_expiry__lte=timezone.now(), is_varified=True).order_by('-created')
+    context = {'items': my_auction_items, 'pendingitems': myitem, 'rejecteditems': rejecteditems, 'completedAuction':completedAuction}
     return render(request, 'auction/my_products.html', context)
 
 
@@ -149,7 +166,7 @@ def place_bid(request, pk):
     auctionItem = Auction.objects.get(id=pk)
     if not request.user.is_authenticated:
         return render(request, 'auction/no_permission.html')
-    if request.user.profile.verified_by is None:
+    if not request.user.profile.is_varified:
         messages.info(request, 'You can not participate in Auction, Your Profile is not verified')
         return redirect(reverse('auction_single_product', kwargs={'pk': auctionItem.id}))
     form = PlaceBidForm()
@@ -204,17 +221,29 @@ def feedback(request):
 
 def upcoming_products(request):
     itemlist = Product.objects.exclude(is_online=True).exclude(is_rejected=True)
-    context = {'items': itemlist}
+    paginator = Paginator(itemlist, 5)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    context = {'page_obj': page_obj}
     return render(request, 'auction/upcoming_products.html', context)
 
 
 def won_auction(request):
     won_auction_list = []
     auction_ended = Auction.objects.filter(bid_expiry__lte=timezone.now())
+    for item in auction_ended:
+        print(item.product.product_name);
     for auction in auction_ended:
-        if auction.bidtransaction_set.filter(bidder = request.user.id).exists():
-            winner_bid = auction.bidtransaction_set.filter(bidder=request.user.id).order_by('-amount').first()
-            if winner_bid == auction.maximum_bid:
+        # if auction.bidtransaction_set.filter(bidder = request.user.id).exists():
+        #     print("YES")
+        #     winner_bid = auction.bidtransaction_set.filter(bidder=request.user.id).order_by('-amount').first()
+        #     if winner_bid == auction.maximum_bid:
+        #         won_auction_list.append(auction)
+        if BidTransaction.objects.filter(auction_id=auction.id, bidder=request.user.id).exists():
+            print("Passed 0")
+            if BidTransaction.objects.filter(auction_id=auction.id, bidder=request.user.id).order_by('-amount').first() == auction.maximum_bid:
+                print("YES")
                 won_auction_list.append(auction)
+
     context = {'items':won_auction_list}
     return render(request, 'auction/won_auction.html', context)

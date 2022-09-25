@@ -12,7 +12,7 @@
             <h3 class="card-title">{{ item.product.product_name }}</h3>
             <p>Category : {{ item.product.category }}</p>
 
-            <img src="{{ item.product.product_image.url }}" style="width: 80%">
+            <img src="{{ item.product.product_image.url }}" style="width: 40%">
             <p class="card-text">{{ item.product.product_description }}</p>
             {% if item.maximum_bid == None %}
                 <p>Base Price : {{ item.min_bid_price }}</p>

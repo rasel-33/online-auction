@@ -2,21 +2,23 @@
 
 {% block content %}
     <h1 style="text-align: center">Upcoming Products</h1>
-    {% for item in items %}
+    {% for item in page_obj %}
         <div class="row shadow-lg p-3 mb-5 bg-body rounded" style="margin: 15px;">
             <div class="col-sm-8">
                 <div class="card" style="height: 300px;">
                     <div class="card-body">
-                        <h5 class="card-title"><a href="{% url 'single-product' item.id %}" style="text-decoration: none">{{ item.product_name }}</a>
+                        <h5 class="card-title"><a href="{% url 'single-product' item.id %}"
+                                                  style="text-decoration: none">{{ item.product_name }}</a>
                         </h5>
                         <p class="card-text">Owner : <a
-                                href="{% url 'profile' item.user.id %}" style="text-decoration: none">{{ item.user.username }}</a></p>
+                                href="{% url 'profile' item.user.id %}"
+                                style="text-decoration: none">{{ item.user.username }}</a></p>
                         <p class="card-text">Category : {{ item.category }}</p>
                         <p class="card-text">Proposed Base Bid Price : {{ item.proposed_minimum_price }}</p>
                         <p class="card-text">Proposed Start Time: {{ item.bid_start }}</p>
                         <p class="card-text">Proposed Expire Time: {{ item.bid_expiry }}</p>
                         <a href="{% url 'single-product' item.id %}" class="btn btn-success">View</a>
-                        <a href="#" class="btn btn-primary">Report It</a>
+                        {#                        <a href="#" class="btn btn-primary">Report It</a>#}
                         {#                    TODO: Make it available#}
                     </div>
                 </div>
@@ -31,5 +33,35 @@
             </div>
         </div>
     {% endfor %}
+        <div aria-label="Page navigation example">
+        <span class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+                <a class="btn btn-info" style="margin:5px" href="?page=1">first</a>
+                <a class="btn btn-info" style="margin:5px" href="?page={{ page_obj.previous_page_number }}">previous</a></button>
+            {% endif %}
+
+            <span class="current" style="padding:5px;margin:5px">
+                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+            </span>
+
+            {% if page_obj.has_next %}
+                <a class="btn btn-info" style="margin:5px" href="?page={{ page_obj.next_page_number }}">next</a>
+                <a class="btn btn-info" style="margin:5px" href="?page={{ page_obj.paginator.num_pages }}">last </a>
+            {% endif %}
+        </span>
+        </div>
+{#    <nav aria-label="Page navigation example">#}
+{#        <ul class="pagination justify-content-center">#}
+{#            <li class="page-item disabled">#}
+{#                <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>#}
+{#            </li>#}
+{#            <li class="page-item"><a class="page-link" href="#">1</a></li>#}
+{#            <li class="page-item"><a class="page-link" href="#">2</a></li>#}
+{#            <li class="page-item"><a class="page-link" href="#">3</a></li>#}
+{#            <li class="page-item">#}
+{#                <a class="page-link" href="#">Next</a>#}
+{#            </li>#}
+{#        </ul>#}
+{#    </nav>#}
 
 {% endblock %}

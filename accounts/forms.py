@@ -5,16 +5,17 @@ from accounts.models import GenderTypeChoices, UserTypeChoices, Profile
 
 
 class RegisterUserForm(forms.ModelForm):
-    repassword = forms.CharField(max_length=200, required=True)
+
     user_type = forms.ChoiceField(choices=UserTypeChoices.choices)
     gender = forms.ChoiceField(choices=GenderTypeChoices.choices)
     phone = forms.CharField(max_length=30, required=True)
     location = forms.CharField()
 
+
     class Meta:
         model = User
         fields = ['username', 'first_name', 'last_name', 'email', 'phone', 'user_type', 'gender', 'location',
-                  'password', 'repassword']
+                  'password']
         widgets = {
             'password': forms.PasswordInput(),
             'repassword': forms.PasswordInput()
@@ -22,9 +23,9 @@ class RegisterUserForm(forms.ModelForm):
 
     def clean(self):
         form_data = self.cleaned_data
-        if form_data['password'] != form_data['repassword']:
-            self._errors["password"] = ["Password do not match"]  # Will raise a error message
-            del form_data['password']
+        # if form_data['password'] != form_data['repassword']:
+        #     self._errors["password"] = ["Password do not match"]  # Will raise a error message
+        #     del form_data['password']
         if User.objects.filter(username=form_data['username']).exists():
             self._errors['username'] = ["Username already exists"]  # will raise an error message
         if User.objects.filter(email__iexact=form_data['email']).exists():

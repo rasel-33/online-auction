@@ -60,7 +60,33 @@
         </table>
     </div>
     <hr>
+    <h1 style="text-align: center">Auction Complete Products</h1>
+    <div style="margin:30px">
+        <table class="table">
+            <thead>
+            <tr class="table-active">
+                <th>Name</th>
+                <th>Category</th>
+                <th>Base Price</th>
+                <th>Image</th>
+                <th>Winning Bid</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for item in completedAuction %}
+                <tr class="table-danger">
+                    <td><a href="{% url 'auction_single_product' item.id %}"
+                           style="text-decoration: none">{{ item.product.product_name }}</a></td>
+                    <td>{{ item.product.category }}</td>
+                    <td>{{ item.product.proposed_minimum_price }}</td>
+                    <td><img src="{{ item.product.product_image.url }}" style="width: 30px; height: 30px;"></td>
+                    <td>{{ item.maximum_bid }}</td>
 
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
     <h1 style="text-align: center">Rejected Products</h1>
     <div style="margin:30px">
         <table class="table">

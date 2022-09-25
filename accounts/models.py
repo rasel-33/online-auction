@@ -14,6 +14,8 @@ class GenderTypeChoices(models.TextChoices):
     FEMALE = 'FEMALE'
 
 
+
+
 class Profile(VarifiedByAbstractModel, BaseModel):
     user = models.OneToOneField('auth.User', on_delete=models.CASCADE)
     user_type = models.CharField(max_length=200,choices=UserTypeChoices.choices)

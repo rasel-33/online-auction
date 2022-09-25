@@ -19,11 +19,20 @@
 
                 <div class="mt-3">
                     <p>{{ profile.user_type }} Account</p>
-                    <h3>Credit Status : {{ balance }}$</h3>
+                    {% if expired %}
+                        <h3>Credit Status : 0$</h3>
+                    {% else %}
+                        <h3>Credit Status : {{ balance }}$</h3>
+                    {% endif %}
+
                     {% if request.user.id == profile.user_id %}
                         {% if profile.user_type == 'BUYER' %}
-
-                            <p>Expires On : {{ expiry.date }}</p>
+                            {% if expired %}
+                                <p>Expired</p>
+                                <p>Your previous balance is {{ balance }}$. To continue the balance make a credit request</p>
+                            {% else %}
+                                <p>Expires On : {{ expiry.date }}</p>
+                            {% endif %}
                             <a href="{% url 'request_credit' %}" class="btn btn-outline-danger">Request Credit</a>
 
                         {% endif %}
