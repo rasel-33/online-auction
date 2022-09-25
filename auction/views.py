@@ -87,7 +87,7 @@ def singleproduct(request, pk):
 
 
 def live_auction_products(request):
-    items = Auction.objects.filter(bid_expiry__gte=timezone.now())
+    items = Auction.objects.filter(bid_expiry__gte=timezone.now(), is_varified=True).order_by('-created')
     context = {'items': items}
     return render(request, 'auction/auction_products.html', context)
 
