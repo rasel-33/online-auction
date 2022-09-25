@@ -25,6 +25,7 @@
                     {% endif %}
                     {% if expired %}
                         <h3>Credit Status : 0$</h3>
+                        <p>Your previous balance is {{ balance }}$. To continue the balance make a credit request</p>
                     {% else %}
                         <h3>Credit Status : {{ balance }}$</h3>
                     {% endif %}

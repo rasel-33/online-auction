@@ -149,6 +149,7 @@ STATIC_ROOT = BASE_DIR / 'statics'
 STATICFILES_DIRS = [
     BASE_DIR / 'static'
 ]
+STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
 
 MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'static/images'
