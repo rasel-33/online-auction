@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'auction',
     'accounts',
     'core',
+    'django_q'
 ]
 
 MIDDLEWARE = [

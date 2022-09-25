@@ -18,7 +18,11 @@
                 <span>Member since {{ profile.created.date }}</span>
 
                 <div class="mt-3">
-                    <p>{{ profile.user_type }} Account</p>
+                    {% if profile.is_varified %}
+                    <p>Verified {{ profile.user_type }} Account</p>
+                    {% else %}
+                    <p>Not verified {{ profile.user_type }} Account</p>
+                    {% endif %}
                     {% if expired %}
                         <h3>Credit Status : 0$</h3>
                     {% else %}

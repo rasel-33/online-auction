@@ -3,6 +3,7 @@ from django.urls import reverse
 from django.utils import timezone
 from .forms import AddProductForm, UpdateProductForm, PlaceBidForm, FeedbackForm
 from auction.models import Product, Auction, BidTransaction
+from accounts.models import Credit, CreditTransaction
 from django.contrib import messages
 from django.core.mail import send_mail
 from django.core.paginator import Paginator
@@ -174,23 +175,75 @@ def place_bid(request, pk):
         form = PlaceBidForm(request.POST)
         print(form.is_valid())
         if form.is_valid():
-            auctionItem = Auction.objects.get(id=pk)
-            if auctionItem.bid_expiry < timezone.now():
-                messages.info(request, "Time is over You can not place a bid")
+            first_bid = False
+            if BidTransaction.objects.filter(id=pk).exists():
+                last_winner = BidTransaction.objects.filter(id=pk).order_by('-created').first().bidder
+                last_amount = BidTransaction.objects.filter(id=pk).order_by('-created').first().amount
+                auctionItem = Auction.objects.get(id=pk)
+                amount = auctionItem.maximum_bid + form.cleaned_data.get('add_amount')
+                if request.user.credit.balance < amount or request.user.credit.expiry < timezone.now():
+                    messages.info(request, "Check your balance and balance expiry")
+                    return redirect(reverse('auction_single_product', kwargs={'pk': auctionItem.id}))
+                wwon = will_won_auction(auctionItem.id, amount)
+                print(wwon)
+                BidTransaction.objects.create(
+                    bidder_id=request.user.id,
+                    auction=auctionItem,
+                    amount=amount,
+                    has_won=wwon
+                )
+                if wwon:
+                    last_winner.credit.balance += last_amount
+                    last_winner.credit.balance.save()
+                    creditTransactionObj1 = CreditTransaction.objects.create(
+                        credit_id=request.user.credit.id,
+                        amount=last_amount,
+                        transaction_type='CREDIT_RETURN'
+                    )
+                    creditTransactionObj1.save()
+                    request.user.credit.balance -= amount
+                    request.user.credit.save()
+                    creditTransactionObj2 = CreditTransaction.objects.create(
+                        credit_id=request.user.credit.id,
+                        amount=amount,
+                        transaction_type='PLACE_BID'
+                    )
+                    creditTransactionObj2.save()
+
+                    auctionItem.maximum_bid = amount
+                    auctionItem.save()
                 return redirect(reverse('auction_single_product', kwargs={'pk': auctionItem.id}))
-            amount = auctionItem.maximum_bid + form.cleaned_data.get('add_amount')
-            wwon = will_won_auction(auctionItem.id, amount)
-            print(wwon)
-            BidTransaction.objects.create(
-                bidder_id=request.user.id,
-                auction=auctionItem,
-                amount=amount,
-                has_won=wwon
-            )
-            if wwon:
-                auctionItem.maximum_bid = amount
-                auctionItem.save()
-            return redirect(reverse('auction_single_product', kwargs={'pk': auctionItem.id}))
+            else:
+                print("going on")
+                auctionItem = Auction.objects.get(id=pk)
+                amount = auctionItem.maximum_bid + form.cleaned_data.get('add_amount')
+                if request.user.credit.balance < amount or request.user.credit.expiry < timezone.now():
+                    messages.info(request, "Check your balance and balance expiry")
+                    return redirect(reverse('auction_single_product', kwargs={'pk': auctionItem.id}))
+                wwon = will_won_auction(auctionItem.id, amount)
+                print(wwon)
+                BidTransaction.objects.create(
+                    bidder_id=request.user.id,
+                    auction=auctionItem,
+                    amount=amount,
+                    has_won=wwon
+                )
+                if wwon:
+
+                    request.user.credit.balance -= amount
+                    request.user.credit.save()
+                    print(request.user.credit.balance)
+                    creditTransactionObj2 = CreditTransaction.objects.create(
+                        credit_id=request.user.credit.id,
+                        amount=amount,
+                        transaction_type='PLACE_BID'
+                    )
+                    creditTransactionObj2.save()
+
+                    auctionItem.maximum_bid = amount
+                    auctionItem.save()
+                return redirect(reverse('auction_single_product', kwargs={'pk': auctionItem.id}))
+
     return render(request, 'auction/auction_single_product.html')
 
 

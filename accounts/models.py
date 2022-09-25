@@ -37,10 +37,18 @@ class Credit(BaseModel):
     def __str__(self):
         return self.user.username
 
+class TransactionTypeChoices(models.TextChoices):
+    BID_CREDIT_RETURN = 'CREDIT_RETURN'
+    REQUESTED_CREDIT = 'REQUESTED_CREDIT'
+    PLACE_BID = 'PLACE_BID'
+    WIDTHDRAW = 'WIDTHDRAW'
 
 class CreditTransaction(BaseModel):
     credit = models.ForeignKey("accounts.Credit",on_delete=models.SET_NULL,null=True)
     amount = models.PositiveIntegerField(default=0)
-    transaction_type = models.CharField(max_length=100)
+    transaction_type = models.CharField(max_length=200,choices=TransactionTypeChoices.choices, null=True, blank=True)
 
+
+    def __str__(self):
+        return self.credit.user.username + " => " +self.transaction_type
 

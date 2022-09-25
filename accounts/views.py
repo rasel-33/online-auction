@@ -172,9 +172,9 @@ def profile_view(request, pk):
     # print(user)
     fullname = profile.user.first_name + " " + profile.user.last_name
 
-    creditObject = Credit.objects.get(user_id=pk)
-    credit_balance = creditObject.balance
-    credit_expiry = creditObject.expiry
+
+    credit_balance = request.user.credit.balance
+    credit_expiry = request.user.credit.expiry
     expired = False
     if credit_expiry < timezone.now():
         expired = True
