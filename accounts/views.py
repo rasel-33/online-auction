@@ -44,13 +44,13 @@ def registerUser(request):
             )
             subject = 'Welcome to online-auction'
             message = "Let's have an online virtual auction environment On Online-Auction. Feel Safe with 100% varified users and original transaction guranteed"
-            # send_mail(
-            #     subject,
-            #     message,
-            #     settings.EMAIL_HOST_USER,
-            #     [profile.user.email],
-            #     fail_silently=False,
-            # )
+            send_mail(
+                subject,
+                message,
+                settings.EMAIL_HOST_USER,
+                [profile.user.email],
+                fail_silently=False,
+            )
 
             return redirect('home')
 
