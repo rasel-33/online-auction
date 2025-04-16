@@ -74,8 +74,6 @@ python manage.py runserver
 ```
 ## 📷 Screenshots
 
-> Save these images in a `/screenshots` folder inside your project
-
 | Homepage | Product Detail | Bid Panel |
 |----------|----------------|-----------|
 | ![](screenshots/home.png) | ![](screenshots/product.png) | ![](screenshots/bid.png) |
