@@ -72,10 +72,4 @@ python manage.py createsuperuser
 python manage.py runserver
 
 ```
-## 📷 Screenshots
 
-| Homepage | Product Detail | Bid Panel |
-|----------|----------------|-----------|
-| ![](screenshots/home.png) | ![](screenshots/product.png) | ![](screenshots/bid.png) |
-
----
